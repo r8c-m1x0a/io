@@ -27,12 +27,12 @@ testEnv = Environment(
 )
 
 lib = env.Library(
-    f"{PROGRAM}.a", [
+    f"build/{PROGRAM}.a", [
         'build/r8c-m1xa-io.cpp',
     ],
 )
 testProg = testEnv.Program(
-    PROGRAM, [
+    f"build/{PROGRAM}", [
         'build/test/test-r8c-m1xa-io.cpp',
         'build/test/test-mstrc.cpp',
         'build/test/test-ococr.cpp',
@@ -48,12 +48,11 @@ testProg = testEnv.Program(
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
-print(f"TEST_ONLY: {TEST_ONLY}")
 test = testEnv.Command(
-    f"{PROGRAM}.log", testProg,
-    f"./{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {PROGRAM}.log"
+    f"build/{PROGRAM}.log", testProg,
+    f"build/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee build/{PROGRAM}.log"
 )
 testEnv.AlwaysBuild(test)
-Alias("test", f"{PROGRAM}.log")
+Alias("test", f"build/{PROGRAM}.log")
 
 Default(lib)

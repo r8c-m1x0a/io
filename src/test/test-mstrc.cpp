@@ -60,10 +60,10 @@ TEST(MstcrTest, Mstcr) {
     mstcr.set(mstcr_t().clone().activating_uart(true));
     EXPECT_EQ(0b00000000, mstcr.as_uint8);
 
-    uint8_t *pU8 = (uint8_t *)malloc(sizeof(IO_t));
-    IO_t *pIo = (IO_t *)pU8;
-    memset(pU8, 0, sizeof(IO_t));
+    uint8_t *pU8 = (uint8_t *)malloc(sizeof(io_t));
+    io_t *pIo = (io_t *)pU8;
+    memset(pU8, 0, sizeof(io_t));
     pIo->mstcr.bits.is_uart_standby = true;
-    EXPECT_EQ(0b01000000, pU8[0x12 - IO_START_ADR]);
+    EXPECT_EQ(0b01000000, pU8[0x12 - IO_START_ADDR]);
     free(pU8);
 }
