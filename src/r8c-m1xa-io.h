@@ -260,7 +260,7 @@ typedef union u0rb_t {
     bool is_ovr_err:1;
     bool is_frm_err:1;
     bool is_prity_err:1;
-    bool si_sum_err:1;
+    bool is_sum_err:1;
   } b8;
 
   struct {
@@ -394,8 +394,8 @@ typedef union ckstpr_t {
     bool is_prescaler_stopped:1;
     unsigned int reserved:4;
     unsigned int base_clk:1;
-  uint8_t as_uint8;
   } bits;
+  uint8_t as_uint8;
 
   ckstpr_t(uint8_t u = 0): as_uint8(u) {}
 
