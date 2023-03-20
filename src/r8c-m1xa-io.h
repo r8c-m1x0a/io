@@ -235,13 +235,46 @@ enum class PRCR_UNLOCK_REG : uint8_t {
   UNLOCKED = 1
 };
 
-typedef struct prcr_t {
-  unsigned int prc0:1;
-  unsigned int prc1:1;
-  unsigned int reserved0:1;
-  unsigned int prc3:1;
-  unsigned int prc4:1;
-  unsigned int reserved1:3;
+typedef union prcr_t {
+  struct {
+    bool p0_enabled:1;
+    bool p1_enabled:1;
+    unsigned int reserved0:1;
+    bool p3_enabled:1;
+    bool p4_enabled:1;
+    unsigned int reserved1:3;
+  } bits;
+  uint8_t as_uint8;
+
+  prcr_t(uint8_t u = 0): as_uint8(u) {}
+
+  prcr_t clone() volatile {
+    return prcr_t(this->as_uint8);
+  }
+
+  prcr_t& with_p0_enabled(bool e) {
+    this->bits.p0_enabled = e;
+    return *this;
+  }
+
+  prcr_t& with_p1_enabled(bool e) {
+    this->bits.p1_enabled = e;
+    return *this;
+  }
+
+  prcr_t& with_p3_enabled(bool e) {
+    this->bits.p3_enabled = e;
+    return *this;
+  }
+
+  prcr_t& with_p4_enabled(bool e) {
+    this->bits.p4_enabled = e;
+    return *this;
+  }
+
+  void set(const prcr_t& that) volatile {
+    this->as_uint8 = that.as_uint8;
+  }
 } prcr_t;
 
 typedef union u0rb_t {
