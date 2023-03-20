@@ -274,8 +274,12 @@ typedef union u0rb_t {
 
   uint16_t as_uint16;
 
-  u0rb_t(uint16_t u16) {
+  u0rb_t(uint16_t u16 = 0) {
     this->as_uint16 = u16;
+  }
+  
+  u0rb_t clone() volatile {
+    return u0rb_t(this->as_uint16);
   }
 
   uint8_t recv_b7() volatile {
