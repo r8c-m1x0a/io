@@ -27,7 +27,7 @@ testEnv = Environment(
 )
 
 lib = env.Library(
-    f"build/{PROGRAM}.a", [
+    f"{PROGRAM}.a", [
         'build/r8c-m1xa-io.cpp',
     ],
 )
