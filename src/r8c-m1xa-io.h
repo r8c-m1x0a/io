@@ -1,5 +1,4 @@
-#ifndef R8C_M1XA_IO_H
-#define R8C_M1XA_IO_H
+#pragma once
 
 #include <cstdint>
 
@@ -955,18 +954,40 @@ enum class ITR_LEVEL : uint8_t {
   LEVEL_2 = 2,
 };
 
-typedef struct ilvl0_t {
-  unsigned int reserved0:2;
-  unsigned int flash_ready:2;
-  unsigned int reserved1:4;
+typedef union ilvl0_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int flash_ready:2;
+    unsigned int reserved1:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl0_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl0_t clone() volatile {
+    return ilvl0_t(this->as_uint8_t);
+  }
+
+  ilvl0_t& with_flash_ready(ITR_LEVEL lvl) {
+    this->bits.flash_ready = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_flash_ready(ITR_LEVEL lvl) volatile {
+    this->bits.flash_ready = (uint8_t)lvl;
+  }
+
+  void set(const ilvl0_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl0_t;
 
 typedef union ilvl2_t {
   struct {
+    unsigned int comp_b1:2;
     unsigned int reserved0:2;
     unsigned int comp_b3:2;
     unsigned int reserved1:2;
-    unsigned int comp_b1:2;
   } bits;
   uint8_t as_uint8_t;
 
@@ -999,38 +1020,170 @@ typedef union ilvl2_t {
   }
 } ilvl2_t;
 
-typedef struct ilvl3_t {
-  unsigned int reserved0:2;
-  unsigned int timer_rc:2;
-  unsigned int reserved1:4;
+typedef union ilvl3_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int timer_rc:2;
+    unsigned int reserved1:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl3_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl3_t clone() volatile {
+    return ilvl3_t(this->as_uint8_t);
+  }
+
+  ilvl3_t& with_time_rc(ITR_LEVEL lvl) {
+    this->bits.timer_rc = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_timer_rc(ITR_LEVEL lvl) volatile {
+    this->bits.timer_rc = (uint8_t)lvl;
+  }
+
+  void set(const ilvl2_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl3_t;
 
-typedef struct ilvl6_t {
-  unsigned int reserved0:2;
-  unsigned int key_input:2;
-  unsigned int reserved1:4;
+typedef union ilvl6_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int key_input:2;
+    unsigned int reserved1:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl6_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl6_t clone() volatile {
+    return ilvl6_t(this->as_uint8_t);
+  }
+
+  ilvl6_t& with_key_input(ITR_LEVEL lvl) {
+    this->bits.key_input = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_key_input(ITR_LEVEL lvl) volatile {
+    this->bits.key_input = (uint8_t)lvl;
+  }
+
+  void set(const ilvl6_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl6_t;
 
-typedef struct ilvl7_t {
-  unsigned int reserved0:6;
-  unsigned int adc:2;
+typedef union ilvl7_t {
+  struct {
+    unsigned int adc:2;
+    unsigned int reserved1:6;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl7_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl7_t clone() volatile {
+    return ilvl7_t(this->as_uint8_t);
+  }
+
+  ilvl7_t& with_adc(ITR_LEVEL lvl) {
+    this->bits.adc = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_adc(ITR_LEVEL lvl) volatile {
+    this->bits.adc = (uint8_t)lvl;
+  }
+
+  void set(const ilvl7_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl7_t;
 
-typedef struct ilvl8_t {
-  unsigned int reserved0:2;
-  unsigned int uart_tx:2;
-  unsigned int reserved1:4;
+typedef union ilvl8_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int uart_tx:2;
+    unsigned int reserved1:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl8_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl8_t clone() volatile {
+    return ilvl8_t(this->as_uint8_t);
+  }
+
+  ilvl8_t& with_uart_tx(ITR_LEVEL lvl) {
+    this->bits.uart_tx = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_uart_tx(ITR_LEVEL lvl) volatile {
+    this->bits.uart_tx = (uint8_t)lvl;
+  }
+
+  void set(const ilvl8_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl8_t;
 
-typedef struct ilvl9_t {
-  unsigned int reserved0:6;
-  unsigned int uart_rx:2;
+typedef union ilvl9_t {
+  struct {
+    unsigned int uart_rx:2;
+    unsigned int reserved0:6;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvl9_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvl9_t clone() volatile {
+    return ilvl9_t(this->as_uint8_t);
+  }
+
+  ilvl9_t& with_uart_rx(ITR_LEVEL lvl) {
+    this->bits.uart_rx = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_uart_rx(ITR_LEVEL lvl) volatile {
+    this->bits.uart_rx = (uint8_t)lvl;
+  }
+
+  void set(const ilvl9_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvl9_t;
 
-typedef struct ilvla_t {
-  unsigned int reserved0:2;
-  unsigned int int2:2;
-  unsigned int reserved1:4;
+typedef union ilvla_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int int2:2;
+    unsigned int reserved1:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvla_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvla_t clone() volatile {
+    return ilvla_t(this->as_uint8_t);
+  }
+
+  ilvla_t& with_int2(ITR_LEVEL lvl) {
+    this->bits.int2 = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_int2(ITR_LEVEL lvl) volatile {
+    this->bits.int2 = (uint8_t)lvl;
+  }
+
+  void set(const ilvla_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvla_t;
 
 typedef union ilvlb_t {
@@ -1109,15 +1262,59 @@ typedef union ilvlc_t {
   }
 } ilvlc_t;
 
-typedef struct ilvld_t {
-  unsigned int reserved0:6;
-  unsigned int int3:2;
+typedef union ilvld_t {
+  struct {
+    unsigned int int3:2;
+    unsigned int reserved0:6;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvld_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvld_t clone() volatile {
+    return ilvld_t(this->as_uint8_t);
+  }
+
+  ilvld_t& with_int3(ITR_LEVEL lvl) {
+    this->bits.int3 = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_int3(ITR_LEVEL lvl) volatile {
+    this->bits.int3 = (uint8_t)lvl;
+  }
+
+  void set(const ilvld_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvld_t;
 
-typedef struct ilvle_t {
-  unsigned int reserved0:2;
-  unsigned int int0:2;
-  unsigned int reserved1:4;
+typedef union ilvle_t {
+  struct {
+    unsigned int reserved0:4;
+    unsigned int int0:2;
+    unsigned int reserved0:2;
+  } bits;
+  uint8_t as_uint8_t;
+
+  ilvle_t(uint8_t u = 0): as_uint8_t(u) {}
+
+  ilvle_t clone() volatile {
+    return ilvle_t(this->as_uint8_t);
+  }
+
+  ilvle_t& with_int0(ITR_LEVEL lvl) {
+    this->bits.int0 = (uint8_t)lvl;
+    return *this;
+  }
+
+  void set_int0(ITR_LEVEL lvl) volatile {
+    this->bits.int0 = (uint8_t)lvl;
+  }
+
+  void set(const ilvle_t& that) volatile {
+    this->as_uint8_t = that.as_uint8_t;
+  }
 } ilvle_t;
 
 enum class VCAC_EDGE : uint8_t {
@@ -4580,4 +4777,3 @@ extern volatile ofs_t *pOfs;
 #define OFS2_ADDR 0xFFDB
 #define OFS_ADDR 0xFFFF
 
-#endif
