@@ -335,7 +335,7 @@ typedef union ococr_t {
   } bits;
   uint8_t as_uint8;
 
-  ococr_t(uint8_t u): as_uint8(u) {}
+  ococr_t(uint8_t u = 0): as_uint8(u) {}
 
   ococr_t clone() volatile {
     return ococr_t(this->as_uint8);
@@ -4405,7 +4405,9 @@ typedef struct {
   uint8_t buf[32767];
 } foo;
 
-typedef struct {
+typedef struct io_t {
+  io_t() = default;
+
   struct { // 0x00010
     unsigned int reserved0:3;
     unsigned int srst:1;
@@ -4502,7 +4504,7 @@ typedef struct {
   
   uint8_t padding11[1]; // 0x0004F
 
-  struct { // 0x00050
+  struct irr0 { // 0x00050
     bool timer_rj2_itr_requested:1;
     bool timer_rb2_itr_requested:1;
     bool timer_rc_itr_requested:1;
@@ -4769,11 +4771,8 @@ typedef struct {
 } io_t;
 #pragma pack()
 
-extern volatile io_t *pIo;
-extern volatile ofs2_t *pOfs2;
-extern volatile ofs_t *pOfs;
-
 #define IO_START_ADDR 0x10
 #define OFS2_ADDR 0xFFDB
 #define OFS_ADDR 0xFFFF
 
+extern volatile io_t io;
