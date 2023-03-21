@@ -44,6 +44,8 @@ testProg = testEnv.Program(
         'build/test/test-u0ir.cpp',
         'build/test/test-pmh1.cpp',
         'build/test/test-pmh1e.cpp',
+        'build/test/test-ilvl8.cpp',
+        'build/test/test-ilvl9.cpp',
     ]
 )
 

@@ -1293,7 +1293,7 @@ typedef union ilvle_t {
   struct {
     unsigned int reserved0:4;
     unsigned int int0:2;
-    unsigned int reserved0:2;
+    unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
 

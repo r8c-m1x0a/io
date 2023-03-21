@@ -9,7 +9,7 @@ TEST(Ilvl8Test, Ilvl8) {
     EXPECT_EQ(0b00010000, pU8[0x48 - IO_START_ADDR]);
 
     pIo->ilvl8.set_uart_tx(ITR_LEVEL::LEVEL_2);
-    EXPECT_EQ(0b00100100, pU8[0x48 - IO_START_ADDR]);
+    EXPECT_EQ(0b00100000, pU8[0x48 - IO_START_ADDR]);
 
     free(pU8);
 }
