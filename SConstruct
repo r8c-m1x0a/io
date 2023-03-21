@@ -4,9 +4,7 @@ import os
 
 PROGRAM='r8c_io'
 
-VariantDir('build', ['src'], duplicate=0)
-
-env = Environment(
+baseEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
     AS='m32c-elf-as',
     CC='m32c-elf-gcc',
@@ -15,46 +13,36 @@ env = Environment(
     CXXFLAGS='-std=c++14',
     CPPFLAGS='-Wall -Werror -Wno-unused-variable -fno-exceptions -Os -mcpu=r8c',
     CPPPATH=['src'],
-    LINK='m32c-elf-gcc',
-    LINKFLAGS=f"-mcpu=r8c -nostartfiles -Wl,-Map,{PROGRAM}.map -T src/M120AN/m120an.ld -lsupc++",
 )
+
+env = baseEnv.Clone()
+env.VariantDir('build', 'src', duplicate=0)
 
 testEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
     LIBS=['pthread', 'libgtest'],
-    CPPFLAGS='-g3',
     CPPPATH=['src'],
 )
+testEnv.VariantDir('build', 'src', duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
         'build/r8c-m1xa-io.cpp',
     ],
 )
+
 testProg = testEnv.Program(
-    f"build/{PROGRAM}", [
-        'build/test/test-r8c-m1xa-io.cpp',
-        'build/test/test-mstrc.cpp',
-        'build/test/test-ococr.cpp',
-        'build/test/test-sckcr.cpp',
-        'build/test/test-ckstpr.cpp',
-        'build/test/test-u0mr.cpp',
-        'build/test/test-u0c0.cpp',
-        'build/test/test-u0c1.cpp',
-        'build/test/test-u0ir.cpp',
-        'build/test/test-pmh1.cpp',
-        'build/test/test-pmh1e.cpp',
-        'build/test/test-ilvl8.cpp',
-        'build/test/test-ilvl9.cpp',
-    ]
+    PROGRAM, Glob('build/test/*.cpp')
 )
+
+BASE_DIR = Dir('.').srcnode().abspath
 
 TEST_ONLY = os.getenv('TEST_ONLY')
 test = testEnv.Command(
-    f"build/{PROGRAM}.log", testProg,
-    f"build/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee build/{PROGRAM}.log"
+    f"{BASE_DIR}/{PROGRAM}.log", testProg,
+    f"{BASE_DIR}/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/{PROGRAM}.log"
 )
 testEnv.AlwaysBuild(test)
-Alias("test", f"build/{PROGRAM}.log")
+Alias("test", f"{BASE_DIR}/{PROGRAM}.log")
 
 Default(lib)
