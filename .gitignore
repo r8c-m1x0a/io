@@ -3,3 +3,6 @@
 R8C
 build
 html
+*.a
+r8c_io
+r8c_io.log
