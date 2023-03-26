@@ -73,6 +73,13 @@
 #include "trccr1_source.h"
 #include "trccr1_clear_mode.h"
 #include "trci0r0_ctrl.h"
+#include "trcior1_trcgrc_ctrl.h"
+#include "trcior1_trcgrd_ctrl.h"
+#include "trccr2_edge.h"
+#include "trcdf_clock.h"
+#include "trcoer_e.h"
+#include "trcoer_out.h"
+#include "trcopr_op_sel.h"
 
 #pragma pack(1)
 
@@ -2940,34 +2947,6 @@ typedef union trcior0_t {
   }
 } trcior0_t;
 
-enum class TRCIOR1_TRCGRC_CTRL : uint8_t {
-  OUT_COMP_TRCIOA_DISABLED = 0,
-  OUT_COMP_TRCIOA_LOW_LEVEL = 1,
-  OUT_COMP_TRCIOA_HIGH_LEVEL = 2,
-  OUT_COMP_TRCIOA_TOGGLE = 3,
-  OUT_COMP_TRCIOC_DISABLED = 8, 
-  OUT_COMP_TRCIOC_LOW_LEVEL = 9, 
-  OUT_COMP_TRCIOC_HIGH_LEVEL = 10, 
-  OUT_COMP_TRCIOC_TOGGLE = 11, 
-  IN_CAPT_TRCIOC_RISING_EDGE = 12,
-  IN_CAPT_TRCIOC_FALING_EDGE = 13,
-  IN_CAPT_TRCIOC_BOTH_EDGE = 14,
-};
-
-enum class TRCIOR1_TRCGRD_CTRL : uint8_t {
-  OUT_COMP_TRCIOB_DISABLED = 0,
-  OUT_COMP_TRCIOB_LOW_LEVEL = 1,
-  OUT_COMP_TRCIOB_HIGH_LEVEL = 2,
-  OUT_COMP_TRCIOB_TOGGLE = 3,
-  OUT_COMP_TRCIOD_DISABLED = 8, 
-  OUT_COMP_TRCIOD_LOW_LEVEL = 9, 
-  OUT_COMP_TRCIOD_HIGH_LEVEL = 10, 
-  OUT_COMP_TRCIOD_TOGGLE = 11, 
-  IN_CAPT_TRCIOD_RISING_EDGE = 12,
-  IN_CAPT_TRCIOD_FALING_EDGE = 13,
-  IN_CAPT_TRCIOD_BOTH_EDGE = 14,
-};
-
 typedef union trcior1_t {
   struct {
     unsigned int trcgrc_ctrl:4;
@@ -3003,13 +2982,6 @@ typedef union trcior1_t {
     this->as_uint8 = that.as_uint8;
   }
 } trcior1_t;
-
-enum class TRCCR2_EDGE : uint8_t {
-  DISABLED = 0,
-  RISING = 1,
-  FALLING = 2,
-  BOTH = 3,
-};
 
 typedef union trccr2_t {
   struct {
@@ -3061,13 +3033,6 @@ typedef union trccr2_t {
     this->as_uint8 = that.as_uint8;
   }
 } trccr2_t;
-
-enum class TRCDF_CLOCK : uint8_t {
-  F32 = 0,
-  F8 = 1,
-  F1 = 2,
-  COUNT = 3,
-};
 
 typedef union trcdf_t {
   struct {
@@ -3125,16 +3090,6 @@ typedef union trcdf_t {
     this->as_uint8 = that.as_uint8;
   }
 } trcdf_t;
-
-enum class TRCOER_E : uint8_t {
-  ENABLED = 0,
-  DISABLED_OR_HIGH_IMP = 1,
-};
-
-enum class TRCOER_OUT : uint8_t {
-  DO_NOT_CHANGE = 0,
-  SET = 1,
-};
 
 typedef union trcoer_t {
   struct {
@@ -3244,20 +3199,6 @@ typedef union trcadcr_t {
   }
 } trcadcr_t;
 
-enum class TRCOPR_OP_SEL {
-  B1 = 0,
-  INT1 = 1,
-  BOTH0 = 2,
-  BOTH1 = 3,
-};
-
-enum class TRCOPR_OP_OUT_LEVEL {
-  HI_IMP_WHEN_PULL_DOWN,
-  HI_IMP_WHEN_PULL_UP,
-  LOW_WHILE_OUT_PERIOD,
-  HI_WHILE_OUT_PERIOD,
-};
-
 typedef union trcopr_t {
   struct {
     unsigned int opsel:2;
@@ -3307,11 +3248,6 @@ typedef union trcopr_t {
   }
 } trcopr_t;
 
-enum class WCMPR_COND : uint8_t {
-  CMP_LESS_THAN_REF_OR_DISABLED = 0,
-  CMP_GREATER_THAN_REF = 1,
-};
-
 typedef union wcmpr_t {
   struct {
     bool op1_enabled:1;
@@ -3343,19 +3279,6 @@ typedef union wcmpr_t {
     this->as_uint8 = that.as_uint8;
   }
 } wcmpr_t;
-
-enum class CMP_FILTER_SMPL : uint8_t {
-  NO_FILTER = 0,
-  F1 = 1,
-  F8 = 2,
-  F32 = 3,
-};
-
-enum class CMP_ITR_EDGE: uint8_t {
-  LOWER = 0,
-  HIGHER = 1,
-  BOTH = 2,
-};
 
 typedef union wcbintr_t {
   struct {
@@ -3439,11 +3362,6 @@ typedef union fst_t {
     this->as_uint8 = that.as_uint8;
   }
 } fst_t;
-
-enum class FMR0_EW_MODE : uint8_t {
-  EW0_MODE = 0,
-  EW1_MODE = 1,
-};
 
 typedef union fmr0_t {
   struct {
@@ -3591,25 +3509,6 @@ typedef union fmr2_t {
   }
 } fmr2_t;
 
-enum class OFS2_WDT_UNDERFLOW_PERIOD {
-  L03FF = 0,
-  L0FFF = 1,
-  L1FFF = 2,
-  L3FFF = 3,
-};
-
-enum class OFS2_WDT_REFRESH_PERIOD {
-  P25 = 0,
-  P50 = 1,
-  P75 = 2,
-  P100 = 3,
-};
-
-enum class OFS2_MSTCR_INI_VALUE {
-  V0 = 0,
-  Vx77 = 1,
-};
-
 typedef union ofs2_t {
   struct {
     unsigned int wdt_underflow_period:2;
@@ -3657,13 +3556,6 @@ typedef union ofs2_t {
     this->as_uint8 = that.as_uint8;
   }
 } ofs2_t;
-
-enum class OFS_V_DTCT {
-  V3_80 = 0,
-  V2_85 = 1,
-  V2_35 = 2,
-  V1_90 = 3, 
-};
 
 typedef union ofs_t {
   struct {
