@@ -2224,11 +2224,11 @@ typedef union pm3_t {
 typedef union pm4_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int b2_func:2;
+    PM4_B2_FUNC b2_func:2;
     unsigned int reserved1:4;
-    unsigned int b5_func:2;
-    unsigned int b6_func:2;
-    unsigned int b7_func:2;
+    PM4_B5_FUNC b5_func:2;
+    PM4_B6_FUNC b6_func:2;
+    PM4_B7_FUNC b7_func:2;
   } bits;
   uint16_t as_uint16;
 
@@ -2239,39 +2239,23 @@ typedef union pm4_t {
   }
 
   pm4_t& with_b2_func(PM4_B2_FUNC func) {
-    this->bits.b2_func = (uint8_t)func;
+    this->bits.b2_func = func;
     return *this;
-  }
-
-  void set_b2_func(PM4_B2_FUNC func) volatile {
-    this->bits.b2_func = (uint8_t)func;
   }
 
   pm4_t& with_b5_func(PM4_B5_FUNC func) {
-    this->bits.b5_func = (uint8_t)func;
+    this->bits.b5_func = func;
     return *this;
-  }
-
-  void set_b5_func(PM4_B5_FUNC func) volatile {
-    this->bits.b5_func = (uint8_t)func;
   }
 
   pm4_t& with_b6_func(PM4_B6_FUNC func) {
-    this->bits.b6_func = (uint8_t)func;
+    this->bits.b6_func = func;
     return *this;
-  }
-
-  void set_b6_func(PM4_B6_FUNC func) volatile {
-    this->bits.b6_func = (uint8_t)func;
   }
 
   pm4_t& with_b7_func(PM4_B7_FUNC func) {
-    this->bits.b7_func = (uint8_t)func;
+    this->bits.b7_func = func;
     return *this;
-  }
-
-  void set_b7_func(PM4_B7_FUNC func) volatile {
-    this->bits.b7_func = (uint8_t)func;
   }
 
   void set(const pm4_t& that) volatile {
@@ -2353,8 +2337,8 @@ typedef union trjioc_t {
     unsigned int tedgsel:1;
     bool trjio_disabled:1;
     unsigned int reserved:2;
-    unsigned int trjio_fltr_sample:2;
-    unsigned int ctrl:2;
+    FLTR_SEL trjio_fltr_sample:2;
+    TRJIOC_CTRL ctrl:2;
   } bits;
   uint8_t as_uint8;
 
@@ -2375,21 +2359,13 @@ typedef union trjioc_t {
   }
 
   trjioc_t& with_flter_sample(FLTR_SEL sel) {
-    this->bits.trjio_fltr_sample = (uint8_t)sel;
+    this->bits.trjio_fltr_sample = sel;
     return *this;
-  }
-
-  void set_flter_sample(FLTR_SEL sel) volatile {
-    this->bits.trjio_fltr_sample = (uint8_t)sel;
   }
 
   trjioc_t& with_ctrl(TRJIOC_CTRL ctrl) {
-    this->bits.ctrl = (uint8_t)ctrl;
+    this->bits.ctrl = ctrl;
     return *this;
-  }
-
-  void set_ctrl(TRJIOC_CTRL ctrl) volatile {
-    this->bits.ctrl = (uint8_t)ctrl;
   }
 
   void set(const trjioc_t& that) volatile {
@@ -2399,10 +2375,10 @@ typedef union trjioc_t {
 
 typedef union trjmr_t {
   struct {
-    unsigned int op_mode:3;
+    TRJMR_OP_MODE op_mode:3;
     unsigned int edge:1;
-    unsigned int source:3;
-    unsigned int cutoff:1;
+    TRJMR_SOURCE source:3;
+    TIMER_CUTOFF cutoff:1;
   } bits;
   uint8_t as_uint8;
 
@@ -2413,12 +2389,8 @@ typedef union trjmr_t {
   }
 
   trjmr_t& with_op_mode(TRJMR_OP_MODE op_mode) {
-    this->bits.op_mode = (uint8_t)op_mode;
+    this->bits.op_mode = op_mode;
     return *this;
-  }
-
-  void set_op_mode(TRJMR_OP_MODE op_mode) volatile {
-    this->bits.op_mode = (uint8_t)op_mode;
   }
 
   trjmr_t& with_edge(bool is_two_way_edge) {
@@ -2427,21 +2399,13 @@ typedef union trjmr_t {
   }
 
   trjmr_t& with_source(TRJMR_SOURCE source) {
-    this->bits.source = (uint8_t)source;
+    this->bits.source = source;
     return *this;
-  }
-
-  void set_source(TRJMR_SOURCE source) volatile {
-    this->bits.source = (uint8_t)source;
   }
 
   trjmr_t& with_cutoff(TIMER_CUTOFF cutoff) {
-    this->bits.cutoff = (uint8_t)cutoff;
+    this->bits.cutoff = cutoff;
     return *this;
-  }
-
-  void set_cutoff(TIMER_CUTOFF cutoff) volatile {
-    this->bits.cutoff = (uint8_t)cutoff;
   }
 
   void set(const trjmr_t& that) volatile {
@@ -2451,8 +2415,8 @@ typedef union trjmr_t {
 
 typedef union trjisr_t {
   struct {
-    unsigned int output:2;
-    unsigned int count_while:1;
+    TRJISR_OUTPUT output:2;
+    TRJISR_COUNT_WHILE count_while:1;
     unsigned int reserved:5;
   } bits;
   uint8_t as_uint8;
@@ -2464,21 +2428,13 @@ typedef union trjisr_t {
   }
 
   trjisr_t& with_output(TRJISR_OUTPUT out) {
-    this->bits.output = (uint8_t)out;
+    this->bits.output = out;
     return *this;
-  }
-
-  void set_output(TRJISR_OUTPUT out) volatile {
-    this->bits.output = (uint8_t)out;
   }
 
   trjisr_t& with_count_while(TRJISR_COUNT_WHILE cw) {
-    this->bits.count_while = (uint8_t)cw;
+    this->bits.count_while = cw;
     return *this;
-  }
-
-  void set_count_while(TRJISR_COUNT_WHILE cw) volatile {
-    this->bits.count_while = (uint8_t)cw;
   }
 
   void set(const trjisr_t& that) volatile {
@@ -2578,9 +2534,9 @@ typedef union trbocr_t {
 typedef union trbioc_t {
   struct {
     unsigned int topl:1;
-    unsigned int output:1;
+    TRBIOC_OUTPUT output:1;
     bool is_int0_trigger_one_shot:1;
-    unsigned int edge:1;
+    TRBIOC_EDGE edge:1;
     unsigned int reserved0:4;
   } bits;
   uint8_t as_uint8;
@@ -2592,12 +2548,8 @@ typedef union trbioc_t {
   }
 
   trbioc_t& with_output(TRBIOC_OUTPUT out) {
-    this->bits.output = (uint8_t)out;
+    this->bits.output = out;
     return *this;
-  }
-
-  void set_output(TRBIOC_OUTPUT out) volatile {
-    this->bits.output = (uint8_t)out;
   }
 
   trbioc_t& with_int0_trigger_one_shot(bool b) {
@@ -2606,12 +2558,8 @@ typedef union trbioc_t {
   }
 
   trbioc_t& with_edge(TRBIOC_EDGE edge) {
-    this->bits.edge = (uint8_t)edge;
+    this->bits.edge = edge;
     return *this;
-  }
-
-  void set_edge(TRBIOC_EDGE edge) volatile {
-    this->bits.edge = (uint8_t)edge;
   }
 
   void set(const trbioc_t& that) volatile {
@@ -2621,11 +2569,11 @@ typedef union trbioc_t {
 
 typedef union trbmr_t {
   struct {
-    unsigned int mode:2;
+    TRBMR_MODE mode:2;
     unsigned int bit_len:1;
-    unsigned int reload_target:1;
-    unsigned int source:3;
-    unsigned int cutoff:1;
+    TRBMR_RELOAD_TGT reload_target:1;
+    TRBMR_SOURCE source:3;
+    TIMER_CUTOFF cutoff:1;
   } bits;
   uint8_t as_uint8;
 
@@ -2636,12 +2584,8 @@ typedef union trbmr_t {
   }
 
   trbmr_t& with_mode(TRBMR_MODE mode) {
-    this->bits.mode = (uint8_t)mode;
+    this->bits.mode = mode;
     return *this;
-  }
-
-  void set_mode(TRBMR_MODE mode) volatile {
-    this->bits.mode = (uint8_t)mode;
   }
 
   trbmr_t& with_bits(TRBMR_BIT_LEN len) {
@@ -2654,30 +2598,18 @@ typedef union trbmr_t {
   }
 
   trbmr_t& with_reload_target(TRBMR_RELOAD_TGT tgt) {
-    this->bits.reload_target = (uint8_t)tgt;
+    this->bits.reload_target = tgt;
     return *this;
-  }
-
-  void set_reload_target(TRBMR_RELOAD_TGT tgt) volatile {
-    this->bits.reload_target = (uint8_t)tgt;
   }
 
   trbmr_t& with_source(TRBMR_SOURCE src) {
-    this->bits.source = (uint8_t)src;
+    this->bits.source = src;
     return *this;
-  }
-
-  void set_source(TRBMR_SOURCE src) volatile {
-    this->bits.source = (uint8_t)src;
   }
 
   trbmr_t& with_cutoff(TIMER_CUTOFF cutoff) {
-    this->bits.cutoff = (uint8_t)cutoff;
+    this->bits.cutoff = cutoff;
     return *this;
-  }
-
-  void set_cutoff(TIMER_CUTOFF cutoff) volatile {
-    this->bits.cutoff = (uint8_t)cutoff;
   }
 
   void set(const trbmr_t& that) volatile {
@@ -2687,12 +2619,12 @@ typedef union trbmr_t {
 
 typedef union trcmr_t {
   struct {
-    unsigned int trciob:1;
-    unsigned int trcioc:1;
-    unsigned int trciod:1;
-    unsigned int pwm2:1;
-    unsigned int bufea:1;
-    unsigned int bufeb:1;
+    TRCMR_MODE trciob:1;
+    TRCMR_MODE trcioc:1;
+    TRCMR_MODE trciod:1;
+    TRCMR_MODE2 pwm2:1;
+    TRCMR_TRCGR bufea:1;
+    TRCMR_TRCGR bufeb:1;
     unsigned int reserved0:1;
     bool is_count_started:1;
   } bits;
@@ -2705,57 +2637,33 @@ typedef union trcmr_t {
   }
 
   trcmr_t& with_trciob(TRCMR_MODE mode) {
-    this->bits.trciob = (uint8_t)mode;
+    this->bits.trciob = mode;
     return *this;
-  }
-
-  void set_trciob(TRCMR_MODE mode) volatile {
-    this->bits.trciob = (uint8_t)mode;
   }
 
   trcmr_t& with_trcioc(TRCMR_MODE mode) {
-    this->bits.trcioc = (uint8_t)mode;
+    this->bits.trcioc = mode;
     return *this;
-  }
-
-  void set_trcioc(TRCMR_MODE mode) volatile {
-    this->bits.trcioc = (uint8_t)mode;
   }
 
   trcmr_t& with_trciod(TRCMR_MODE mode) {
-    this->bits.trciod = (uint8_t)mode;
+    this->bits.trciod = mode;
     return *this;
-  }
-
-  void set_trciod(TRCMR_MODE mode) volatile {
-    this->bits.trciod = (uint8_t)mode;
   }
 
   trcmr_t& with_pwm2(TRCMR_MODE2 mode) {
-    this->bits.pwm2 = (uint8_t)mode;
+    this->bits.pwm2 = mode;
     return *this;
-  }
-
-  void set_pwm2(TRCMR_MODE2 mode) volatile {
-    this->bits.pwm2 = (uint8_t)mode;
   }
 
   trcmr_t& with_bufea(TRCMR_TRCGR buf) {
-    this->bits.bufea = (uint8_t)buf;
+    this->bits.bufea = buf;
     return *this;
-  }
-
-  void set_bufea(TRCMR_TRCGR buf) volatile {
-    this->bits.bufea = (uint8_t)buf;
   }
 
   trcmr_t& with_bufeb(TRCMR_TRCGR buf) {
-    this->bits.bufeb = (uint8_t)buf;
+    this->bits.bufeb = buf;
     return *this;
-  }
-
-  void set_bufeb(TRCMR_TRCGR buf) volatile {
-    this->bits.bufeb = (uint8_t)buf;
   }
 
   void set(const trcmr_t& that) volatile {
@@ -2769,8 +2677,8 @@ typedef union trccr1_t {
     unsigned int trciob_output_level:1;
     unsigned int trcioc_output_level:1;
     unsigned int trciod_output_level:1;
-    unsigned int source:3;
-    unsigned int trccnt_clear_mode:1;
+    TRCCR1_SOURCE source:3;
+    TRCCR1_CLEAR_MODE trccnt_clear_mode:1;
   } bits;
   uint8_t as_uint8;
 
@@ -2801,21 +2709,13 @@ typedef union trccr1_t {
   }
 
   trccr1_t& with_source(TRCCR1_SOURCE source) {
-    this->bits.source = (uint8_t)source;
+    this->bits.source = source;
     return *this;
-  }
-
-  void set_source(TRCCR1_SOURCE source) volatile {
-    this->bits.source = (uint8_t)source;
   }
 
   trccr1_t& with_trccnt_clear_mode(TRCCR1_CLEAR_MODE mode) {
-    this->bits.trccnt_clear_mode = (uint8_t)mode;
+    this->bits.trccnt_clear_mode = mode;
     return *this;
-  }
-
-  void set_trccnt_clear_mode(TRCCR1_CLEAR_MODE mode) volatile {
-    this->bits.trccnt_clear_mode = (uint8_t)mode;
   }
 
   void set(const trccr1_t& that) volatile {
@@ -2919,9 +2819,9 @@ typedef union trcsr_t {
 
 typedef union trcior0_t {
   struct {
-    unsigned int trcgra_ctrl:3;
+    TRCIOR0_CTRL trcgra_ctrl:3;
     unsigned int reserved0:1;
-    unsigned int trcgrb_ctrl:3;
+    TRCIOR0_CTRL trcgrb_ctrl:3;
     unsigned int reserved1:1;
   } bits;
   uint8_t as_uint8;
@@ -2933,21 +2833,13 @@ typedef union trcior0_t {
   }
 
   trcior0_t& with_trcgra_ctrl(TRCIOR0_CTRL ctrl) {
-    this->bits.trcgra_ctrl = (uint8_t)ctrl;
+    this->bits.trcgra_ctrl = ctrl;
     return *this;
-  }
-
-  void set_trcgra_ctrl(TRCIOR0_CTRL ctrl) volatile {
-    this->bits.trcgra_ctrl = (uint8_t)ctrl;
   }
 
   trcior0_t& with_trcgrb_ctrl(TRCIOR0_CTRL ctrl) {
-    this->bits.trcgrb_ctrl = (uint8_t)ctrl;
+    this->bits.trcgrb_ctrl = ctrl;
     return *this;
-  }
-
-  void set_trcgrb_ctrl(TRCIOR0_CTRL ctrl) volatile {
-    this->bits.trcgrb_ctrl = (uint8_t)ctrl;
   }
 
   void set(const trcior0_t that) volatile {
@@ -2957,8 +2849,8 @@ typedef union trcior0_t {
 
 typedef union trcior1_t {
   struct {
-    unsigned int trcgrc_ctrl:4;
-    unsigned int trcgrd_ctrl:4;
+    TRCIOR1_TRCGRC_CTRL trcgrc_ctrl:4;
+    TRCIOR1_TRCGRD_CTRL trcgrd_ctrl:4;
   } bits;
   uint8_t as_uint8;
 
@@ -2969,21 +2861,13 @@ typedef union trcior1_t {
   }
 
   trcior1_t& with_trcgrc_ctrl(TRCIOR1_TRCGRC_CTRL ctrl) {
-    this->bits.trcgrc_ctrl = (uint8_t)ctrl;
+    this->bits.trcgrc_ctrl = ctrl;
     return *this;
-  }
-
-  void set_trcgrc_ctrl(TRCIOR1_TRCGRC_CTRL ctrl) volatile {
-    this->bits.trcgrc_ctrl = (uint8_t)ctrl;
   }
 
   trcior1_t& with_trcgrd_ctrl(TRCIOR1_TRCGRD_CTRL ctrl) {
-    this->bits.trcgrd_ctrl = (uint8_t)ctrl;
+    this->bits.trcgrd_ctrl = ctrl;
     return *this;
-  }
-
-  void set_trcgrd_ctrl(TRCIOR1_TRCGRD_CTRL ctrl) volatile {
-    this->bits.trcgrd_ctrl = (uint8_t)ctrl;
   }
 
   void set(const trcior1_t& that) volatile {
@@ -2998,7 +2882,7 @@ typedef union trccr2_t {
     bool is_trciod_active_high:1;
     unsigned int reserved0:2;
     bool is_count_stopped:1;
-    unsigned int edge:2;
+    TRCCR2_EDGE edge:2;
   } bits;
   uint8_t as_uint8;
 
@@ -3029,12 +2913,8 @@ typedef union trccr2_t {
   }
 
   trccr2_t& with_edge(TRCCR2_EDGE edge) {
-    this->bits.edge = (uint8_t)edge;
+    this->bits.edge = edge;
     return *this;
-  }
-
-  void set_edge(TRCCR2_EDGE edge) volatile {
-    this->bits.edge = (uint8_t)edge;
   }
 
   void set(const trccr2_t& that) volatile {
@@ -3050,7 +2930,7 @@ typedef union trcdf_t {
     bool is_trciod_filter_enabled:1;
     bool is_trciog_filter_enabled:1;
     unsigned int reserved0:1;
-    unsigned int clock:2;
+    TRCDF_CLOCK clock:2;
   } bits;
   uint8_t as_uint8;
 
@@ -3086,12 +2966,8 @@ typedef union trcdf_t {
   }
 
   trcdf_t& with_clock(TRCDF_CLOCK clock) {
-    this->bits.clock = (uint8_t)clock;
+    this->bits.clock = clock;
     return *this;
-  }
-
-  void set_clock(TRCDF_CLOCK clock) volatile {
-    this->bits.clock = (uint8_t)clock;
   }
 
   void set(const trcdf_t& that) volatile {
@@ -3101,12 +2977,12 @@ typedef union trcdf_t {
 
 typedef union trcoer_t {
   struct {
-    unsigned int trcioa:1;
-    unsigned int trciob:1;
-    unsigned int trcioc:1;
-    unsigned int trciod:1;
+    TRCOER_E trcioa:1;
+    TRCOER_E trciob:1;
+    TRCOER_E trcioc:1;
+    TRCOER_E trciod:1;
     unsigned int reserved0:3;
-    unsigned int timer_output:1;
+    TRCOER_OUT timer_output:1;
   } bits;
   uint8_t as_uint8;
 
@@ -3117,48 +2993,28 @@ typedef union trcoer_t {
   }
 
   trcoer_t& with_trcioa(TRCOER_E e) {
-    this->bits.trcioa = (uint8_t)e;
+    this->bits.trcioa = e;
     return *this;
-  }
-
-  void set_trcioa(TRCOER_E e) volatile {
-    this->bits.trcioa = (uint8_t)e;
   }
 
   trcoer_t& with_trciob(TRCOER_E e) {
-    this->bits.trciob = (uint8_t)e;
+    this->bits.trciob = e;
     return *this;
-  }
-
-  void set_trciob(TRCOER_E e) volatile {
-    this->bits.trciob = (uint8_t)e;
   }
 
   trcoer_t& with_trcioc(TRCOER_E e) {
-    this->bits.trcioc = (uint8_t)e;
+    this->bits.trcioc = e;
     return *this;
-  }
-
-  void set_trcioc(TRCOER_E e) volatile {
-    this->bits.trcioc = (uint8_t)e;
   }
 
   trcoer_t& with_trciod(TRCOER_E e) {
-    this->bits.trciod = (uint8_t)e;
+    this->bits.trciod = e;
     return *this;
-  }
-
-  void set_trciod(TRCOER_E e) volatile {
-    this->bits.trciod = (uint8_t)e;
   }
 
   trcoer_t& with_timer_output(TRCOER_OUT out) {
-    this->bits.timer_output = (uint8_t)out;
+    this->bits.timer_output = out;
     return *this;
-  }
-
-  void set_timer_output(TRCOER_OUT out) volatile {
-    this->bits.timer_output = (uint8_t)out;
   }
 
   void set(const trcoer_t& that) volatile {
@@ -3209,8 +3065,8 @@ typedef union trcadcr_t {
 
 typedef union trcopr_t {
   struct {
-    unsigned int opsel:2;
-    unsigned int opol:2;
+    TRCOPR_OP_SEL opsel:2;
+    TRCOPR_OP_OUT_LEVEL opol:2;
     bool is_out_auto_started:1;
     bool is_wave_man_enabled:1;
     unsigned int reserved0:2;
@@ -3224,21 +3080,13 @@ typedef union trcopr_t {
   }
 
   trcopr_t& with_opsel(TRCOPR_OP_SEL sel) {
-    this->bits.opsel = (uint8_t)sel;
+    this->bits.opsel = sel;
     return *this;
-  }
-
-  void set_opsel(TRCOPR_OP_SEL sel) volatile {
-    this->bits.opsel = (uint8_t)sel;
   }
 
   trcopr_t& with_opol(TRCOPR_OP_OUT_LEVEL ol) {
-    this->bits.opol = (uint8_t)ol;
+    this->bits.opol = ol;
     return *this;
-  }
-
-  void set_opol(TRCOPR_OP_OUT_LEVEL ol) volatile {
-    this->bits.opol = (uint8_t)ol;
   }
 
   trcopr_t& with_out_auto_started(bool b) {
@@ -3290,9 +3138,9 @@ typedef union wcmpr_t {
 
 typedef union wcbintr_t {
   struct {
-    unsigned int smpl:2;
+    CMP_FILTER_SMPL smpl:2;
     unsigned int reserved0:2;
-    unsigned int itr_edge:2;
+    CMP_ITR_EDGE itr_edge:2;
     bool is_itr_enabled:1;
     bool is_itr_requested:1;
   } bits;
@@ -3305,21 +3153,13 @@ typedef union wcbintr_t {
   }
 
   wcbintr_t& with_smpl(CMP_FILTER_SMPL smpl) {
-    this->bits.smpl = (uint8_t)smpl;
+    this->bits.smpl = smpl;
     return *this;
-  }
-
-  void set_smpl(CMP_FILTER_SMPL smpl) volatile {
-    this->bits.smpl = (uint8_t)smpl;
   }
 
   wcbintr_t& with_itr_edge(CMP_ITR_EDGE edge) {
-    this->bits.itr_edge = (uint8_t)edge;
+    this->bits.itr_edge = edge;
     return *this;
-  }
-
-  void set_itr_edge(CMP_ITR_EDGE edge) volatile {
-    this->bits.itr_edge = (uint8_t)edge;
   }
 
   wcbintr_t& with_itr_enabled(bool e) {
@@ -3375,7 +3215,7 @@ typedef union fmr0_t {
   struct {
     unsigned reserved0:1;
     bool is_cpu_rewrite_enabled:1;
-    unsigned int ew_mode:1;
+    FMR0_EW_MODE ew_mode:1;
     bool is_flash_memory_stopped:1;
     bool is_write_seq_reset:1;
     bool is_write_error_itr_enabled:1;
@@ -3396,12 +3236,8 @@ typedef union fmr0_t {
   }
 
   fmr0_t& with_ew_mode(FMR0_EW_MODE mode) {
-    this->bits.ew_mode = (uint8_t)mode;
+    this->bits.ew_mode = mode;
     return *this;
-  }
-
-  void set_ew_mode(FMR0_EW_MODE mode) volatile {
-    this->bits.ew_mode = (uint8_t)mode;
   }
 
   fmr0_t& with_flash_memory_stopped(bool b) {
@@ -3516,111 +3352,6 @@ typedef union fmr2_t {
     this->as_uint8 = that.as_uint8;
   }
 } fmr2_t;
-
-typedef union ofs2_t {
-  struct {
-    unsigned int wdt_underflow_period:2;
-    unsigned int wdt_refresh_period:2;
-    unsigned int reserved0:1;
-    unsigned int mstcr_ini_value:1;
-    unsigned int reserved1:2;
-  } bits;
-  uint8_t as_uint8;
-
-  ofs2_t(uint8_t u = 0): as_uint8(u) {}
-
-  ofs2_t clone() volatile {
-    return ofs2_t(this->as_uint8);
-  }
-
-  ofs2_t& with_wdt_underflow_period(OFS2_WDT_UNDERFLOW_PERIOD v) {
-    this->bits.wdt_underflow_period = (uint8_t)v;
-    return *this;
-  }
-
-  void with_wdt_underflow_period(OFS2_WDT_UNDERFLOW_PERIOD v) volatile {
-    this->bits.wdt_underflow_period = (uint8_t)v;
-  }
-
-  ofs2_t& with_wdt_refresh_period(OFS2_WDT_REFRESH_PERIOD v) {
-    this->bits.wdt_refresh_period = (uint8_t)v;
-    return *this;
-  }
-
-  void set_wdt_refresh_period(OFS2_WDT_REFRESH_PERIOD v) volatile {
-    this->bits.wdt_refresh_period = (uint8_t)v;
-  }
-
-  ofs2_t& with_mstcr_ini_value(OFS2_MSTCR_INI_VALUE v) {
-    this->bits.mstcr_ini_value = (uint8_t)v;
-    return *this;
-  }
-
-  void set_mstcr_ini_value(OFS2_MSTCR_INI_VALUE v) volatile {
-    this->bits.mstcr_ini_value = (uint8_t)v;
-  }
-
-  void set(const ofs2_t& that) volatile {
-    this->as_uint8 = that.as_uint8;
-  }
-} ofs2_t;
-
-typedef union ofs_t {
-  struct {
-    bool stop_wdt_after_reset:1;
-    unsigned int reserved0:1;
-    bool is_disable_protect_rom_bit_enabled:1;
-    bool disable_protect_rom:1;
-    unsigned int v_dtct:2;
-    bool is_v_mon_rst_disabled:1;
-    bool is_cnt_src_protect_mode_disabled:1;
-  } bits;
-  uint8_t as_uint8;
-
-  ofs_t(uint8_t u = 0): as_uint8(u) {}
-
-  ofs_t clone() volatile {
-    return ofs_t(this->as_uint8);
-  }
-
-  ofs_t& with_stop_wdt_after_reset(bool b) {
-    this->bits.stop_wdt_after_reset = b;
-    return *this;
-  }
-
-  ofs_t& with_disable_protect_rom_bit_enabled(bool b) {
-    this->bits.is_disable_protect_rom_bit_enabled = b;
-    return *this;
-  }
-
-  ofs_t& with_disable_protect_rom(bool b) {
-    this->bits.disable_protect_rom = b;
-    return *this;
-  }
-
-  ofs_t& with_v_dtct(OFS_V_DTCT dtct) {
-    this->bits.v_dtct = (uint8_t)dtct;
-    return *this;
-  }
-
-  void set_v_dtct(OFS_V_DTCT dtct) volatile {
-    this->bits.v_dtct = (uint8_t)dtct;
-  }
-
-  ofs_t& with_v_mon_rst_disabled(bool b) {
-    this->bits.is_v_mon_rst_disabled = b;
-    return *this;
-  }
-
-  ofs_t& with_cnt_src_protect_mode_disabled(bool b) {
-    this->bits.is_cnt_src_protect_mode_disabled = b;
-    return *this;
-  }
-
-  void set(const ofs_t& that) volatile {
-    this->as_uint8 = that.as_uint8;
-  }
-} ofs_t;
 
 typedef struct {
   uint8_t buf[32767];
