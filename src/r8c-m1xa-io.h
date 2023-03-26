@@ -1,89 +1,148 @@
 #pragma once
 
+/// @file
+/// @brief I/O port定義
+/// @author S.Hanai ruimo.uno@gmail.com
+/// @date 2023/3/22
+///
+/// @details I/O portの定義です。基本的にビットフィールドでアクセス可能です。
+
 #include <cstdint>
+#include "u0mr_smd.h"
+#include "u0mr_stps.h"
+#include "u0mr_parity.h"
+#include "u0c0_clk.h"
+#include "prcr_unlock_reg.h"
+#include "sckcr_phissel.h"
+#include "sckcr_hscksel.h"
+#include "ckstpr_scksel.h"
+#include "pm1_b4_func.h"
+#include "pm1_b5_func.h"
+#include "exckcr_ckpt.h"
+#include "ckrscr_ckst.h"
+#include "ckrscr_phisrs.h"
+#include "ckrscr_rs.h"
+#include "wdtc_div.h"
+#include "fltr_sel.h"
+#include "iscr0_edge.h"
+#include "kien_edge.h"
+#include "itr_level.h"
+#include "vcac_edge.h"
+#include "vd1ls_detect_level.h"
+#include "smpl_clock_div.h"
+#include "vw1c_v_chg_detect.h"
+#include "vw1c_vdet1.h"
+#include "vw1c_itr_src.h"
+#include "admod_cks.h"
+#include "admod_mode.h"
+#include "admod_trigger.h"
+#include "adinsel_adgsel.h"
+#include "pd_dir.h"
+#include "pinsr_input.h"
+#include "drive_capacity.h"
+#include "pamcr_pin_func.h"
+#include "pm1_b0_func.h"
+#include "pm1_b1_func.h"
+#include "pm1_b2_func.h"
+#include "pm1_b3_func.h"
+#include "pm1_b6_func.h"
+#include "pm1_b7_func.h"
+#include "pm3_b3_func.h"
+#include "pm3_b4_func.h"
+#include "pm3_b5_func.h"
+#include "pm3_b7_func.h"
+#include "pm4_b2_func.h"
+#include "pm4_b5_func.h"
+#include "pm4_b6_func.h"
+#include "pm4_b7_func.h"
+#include "trjioc_ctrl.h"
+#include "trjmr_op_mode.h"
+#include "trjmr_source.h"
+#include "timer_cutoff.h"
+#include "trjisr_count_while.h"
+#include "trbioc_output.h"
+#include "trbioc_edge.h"
+#include "trbmr_mode.h"
+#include "trbmr_bit_len.h"
+#include "trbmr_reload_tgt.h"
+#include "trbmr_source.h"
+#include "trcmr_mode.h"
+#include "trjisr_output.h"
+#include "trcmr_mode2.h"
+#include "trcmr_trcgr.h"
+#include "trccr1_source.h"
+#include "trccr1_clear_mode.h"
+#include "trci0r0_ctrl.h"
 
 #pragma pack(1)
-enum class U0MR_SMD : unsigned {
-  DISABLED = 0,
-  SYNC = 1,
-  BIT_LEN7 = 4,
-  BIT_LEN8 = 5,
-  BIT_LEN9 = 6
-};
 
-enum class U0MR_STPS : uint8_t {
-  STOP_BIT_1 = 0,
-  STOP_BIT_2 = 1
-};
-
-enum class U0MR_PARITY : uint8_t {
-  ODD = 0,
-  EVEN = 1,
-  NO = 2,
-};
-
+/// @brief U0MRレジスタ。
 typedef union u0mr_t {
   struct {
-    unsigned int smd:3;
+    U0MR_SMD smd:3;
     bool use_ext_clk:1;
-    unsigned int stps:1;
+    U0MR_STPS stps:1;
     bool is_even_parity:1;
     bool is_parity_enabled:1;
     unsigned int reserved0:1;
   } bits;
   uint8_t as_uint8;
 
+  /// @brief 指定された値を用いてインスタンスを生成します。
+  /// @param u 初期値。
   u0mr_t(uint8_t u = 0) {
     this->as_uint8 = u;
   }
 
+  /// @brief 現在のI/Oの値を使ってインスタンスを生成します。
+  /// @return 現在のI/Oの値。
   u0mr_t clone() volatile {
     return u0mr_t(this->as_uint8);
   }
 
+  /// @brief 現在のインスタンスの値にsmd値を反映します。
+  /// @param smd 反映する値
+  /// @return 現在のインスタンスをそのまま返します。
   u0mr_t& with_smd(U0MR_SMD smd) {
-    this->bits.smd = (uint8_t)smd;
+    this->bits.smd = smd;
     return *this;
   }
 
-  void set_smd(U0MR_SMD smd) volatile {
-    this->bits.smd = (uint8_t)smd;
-  }
-
+  /// @brief 現在のインスタンスの値に外部クロックを利用するかを反映します。
+  /// @param ext trueなら外部クロックを使用。falseなら使用しない。
+  /// @return 現在のインスタンスをそのまま返します。
   u0mr_t& with_external_clk(bool ext) {
     this->bits.use_ext_clk = ext;
     return *this;
   }
 
+  /// @brief 現在のインスタンスにストップビットの値を設定します。
+  /// @param stps ストップビットの値。
+  /// @return 現在のインスタンスをそのまま返します。
   u0mr_t& with_stps(U0MR_STPS stps) {
-    this->bits.stps = (uint8_t)stps;
+    this->bits.stps = stps;
     return *this;
   }
 
-  void set_stps(U0MR_STPS stps) volatile {
-    this->bits.stps = (uint8_t)stps;
-  }
-
+  /// @brief 現在のインスタンスにアパリティの値を設定します。
+  /// @param p パリティの値。
+  /// @return 現在のインスタンスをそのまま返します。
   u0mr_t& with_parity(U0MR_PARITY p) {
     this->bits.is_even_parity = p == U0MR_PARITY::EVEN;
     this->bits.is_parity_enabled = p != U0MR_PARITY::NO;
     return *this;
   }
 
+  /// @brief インスタンスの値をI/Oポートに反映します。
+  /// @param u インスタンス
   void set(const u0mr_t& u) volatile {
     this->as_uint8 = u.as_uint8;
   }
 } u0mr_t;
 
-enum class U0C0_CLK : uint8_t {
-  DIV1 = 0,
-  DIV8 = 1,
-  DIV32 = 2
-};
-
 typedef union u0c0_t {
   struct {
-    unsigned int clk_div:2;
+    U0C0_CLK clk_div:2;
     unsigned int reserved0:1;
     bool is_tx_reg_empty:1;
     bool is_rx_filter_enabled:1;
@@ -98,12 +157,8 @@ typedef union u0c0_t {
   }
 
   u0c0_t& with_clk_div(U0C0_CLK div) {
-    this->bits.clk_div = (uint8_t)div;
+    this->bits.clk_div = div;
     return *this;
-  }
-
-  void set_clk_div(U0C0_CLK div) volatile {
-    this->bits.clk_div = (uint8_t)div;
   }
 
   u0c0_t& with_rx_filter(bool e) {
@@ -229,11 +284,6 @@ typedef union u0ir_t {
   }
 } u0ir_t;
 
-enum class PRCR_UNLOCK_REG : uint8_t {
-  LOCKED = 0,
-  UNLOCKED = 1
-};
-
 typedef union prcr_t {
   struct {
     bool p0_enabled:1;
@@ -356,26 +406,12 @@ typedef union ococr_t {
   }
 } ococr_t;
 
-enum class SCKCR_PHISSEL : uint8_t {
-  DIV_1 = 0,
-  DIV_2 = 1,
-  DIV_4 = 2,
-  DIV_8 = 3,
-  DIV_16 = 4,
-  DIV_32 = 5,
-};
-
-enum class SCKCR_HSCKSEL : uint8_t {
-  EXT_CLK_SRC = 0,
-  ON_CHIP_CLK_SRC = 1
-};
-
 typedef union sckcr_t {
   struct {
-    unsigned int phissel:3;
+    SCKCR_PHISSEL phissel:3;
     unsigned int reserved0:2;
     bool is_wait_mode_entered:1;
-    unsigned int hscksel:1;
+    SCKCR_HSCKSEL hscksel:1;
     unsigned int reserved1:1;
   } bits;
   uint8_t as_uint8;
@@ -387,12 +423,8 @@ typedef union sckcr_t {
   }
 
   sckcr_t& with_cpu_clk_div(SCKCR_PHISSEL sel) {
-    this->bits.phissel = (uint8_t)sel;
+    this->bits.phissel = sel;
     return *this;
-  }
-
-  void set_cpu_clk_div(SCKCR_PHISSEL sel) volatile {
-    this->bits.phissel = (uint8_t)sel;
   }
 
   sckcr_t& with_wait_mode(bool enabled) {
@@ -401,12 +433,8 @@ typedef union sckcr_t {
   }
 
   sckcr_t& with_clk_src(SCKCR_HSCKSEL sel) {
-    this->bits.hscksel = (uint8_t)sel;
+    this->bits.hscksel = sel;
     return *this;
-  }
-
-  void set_clk_src(SCKCR_HSCKSEL sel) volatile {
-    this->bits.hscksel = (uint8_t)sel;
   }
 
   void set(const sckcr_t& that) volatile {
@@ -414,18 +442,13 @@ typedef union sckcr_t {
   }
 } sckcr_t;
 
-enum class CKSTPR_SCKSEL : uint8_t {
-  LOW_SPEED = 0,
-  HIGH_SPEED = 1
-};
-
 typedef union ckstpr_t {
   struct {
     bool is_all_clk_stopped:1;
     bool is_sys_clk_stopped:1;
     bool is_prescaler_stopped:1;
     unsigned int reserved:4;
-    unsigned int base_clk:1;
+    CKSTPR_SCKSEL base_clk:1;
   } bits;
   uint8_t as_uint8;
 
@@ -451,32 +474,14 @@ typedef union ckstpr_t {
   }
 
   ckstpr_t& with_base_clk(CKSTPR_SCKSEL clk) {
-    this->bits.base_clk = (uint8_t)clk;
+    this->bits.base_clk = clk;
     return *this;
-  }
-
-  void set_base_clk(CKSTPR_SCKSEL clk) volatile {
-    this->bits.base_clk = (uint8_t)clk;
   }
 
   void set(const ckstpr_t& that) volatile {
     this->as_uint8 = that.as_uint8;
   }
 } ckstpr_t;
-
-enum class PM1_B4_FUNC : uint8_t {
-  IO_AN4_TRCIOB = 0,
-  TXD0 = 1,
-  RXD0 = 2,
-  INT0 = 3,
-};
-
-enum class PM1_B5_FUNC : uint8_t {
-  IO_VCOUT1 = 0,
-  RXD0 = 1,
-  TRJIO = 2,
-  INT1 = 3,
-};
 
 typedef struct pmh1e_t {
   union {
@@ -558,16 +563,9 @@ typedef union mstcr_t {
   }
 } mstcr_t;
 
-enum class EXCKCR_CKPT : uint8_t {
-  P4_6_IO_P4_7_IO = 0,
-  P4_6_XIN_P4_7_IO = 1,
-  P4_6_IO_P4_7_SCO = 2,
-  P4_6_XIN_P4_7_XOUT = 3,
-};
-
 typedef union exckcr_t {
   struct {
-    unsigned int ckpt: 2;
+    EXCKCR_CKPT ckpt: 2;
     unsigned int reserved0: 4;
     bool is_fdbk_reg_disabled: 1;
     unsigned int reserved1: 1;
@@ -581,12 +579,8 @@ typedef union exckcr_t {
   }
 
   exckcr_t& with_pin_assign(EXCKCR_CKPT assign) {
-    this->bits.ckpt = (uint8_t)assign;
+    this->bits.ckpt = assign;
     return *this;
-  }
-
-  void set_pin_assign(EXCKCR_CKPT assign) volatile {
-    this->bits.ckpt = (uint8_t)assign;
   }
 
   exckcr_t& with_onchip_fbreg_disabled(bool disabled) {
@@ -599,42 +593,13 @@ typedef union exckcr_t {
   }
 } exckcr_t;
 
-enum class CKRSCR_CKST : uint8_t {
-  WAIT_4 = 0,
-  WAIT_16 = 1,
-  WAIT_32 = 2,
-  WAIT_64 = 3,
-  WAIT_128 = 4,
-  WAIT_256 = 5,
-  WAIT_512 = 6,
-  WAIT_1024 = 7,
-  WAIT_2048 = 8,
-  WAIT_4096 = 9,
-  WAIT_8192 = 10,
-  WAIT_16384 = 11,
-  WAIT_32768 = 12,
-  WAIT_65536 = 13,
-  WAIT_131072 = 14,
-  WAIT_262144 = 15,
-};
-
-enum class CKRSCR_PHISRS : uint8_t {
-  USE_PHISSEL = 0,
-  NO_DIV = 1,
-};
-
-enum class CKRSCR_RS : uint8_t {
-  USE_SYSTEM_CLK = 0,
-  USE_HSCK = 1,
-};
-
 typedef union ckrscr_t {
   struct {
-    unsigned int ckst: 4;
+    CKRSCR_CKST ckst: 4;
     unsigned int reserved0: 1;
-    unsigned int phisrs: 1;
-    unsigned int waitrs: 1;
-    unsigned int stoprs: 1;
+    CKRSCR_PHISRS phisrs: 1;
+    CKRSCR_RS waitrs: 1;
+    CKRSCR_RS stoprs: 1;
   } bits;
   uint8_t as_uint8;
 
@@ -645,39 +610,23 @@ typedef union ckrscr_t {
   }
 
   ckrscr_t& with_ckst(CKRSCR_CKST ckst) {
-    this->bits.ckst = (uint8_t)ckst;
+    this->bits.ckst = ckst;
     return *this;
-  }
-
-  void set_ckst(CKRSCR_CKST ckst) volatile {
-    this->bits.ckst = (uint8_t)ckst;
   }
 
   ckrscr_t& with_phisrs(CKRSCR_PHISRS phisrs) {
-    this->bits.phisrs = (uint8_t)phisrs;
+    this->bits.phisrs = phisrs;
     return *this;
-  }
-
-  void set_phisrs(CKRSCR_PHISRS phisrs) volatile {
-    this->bits.phisrs = (uint8_t)phisrs;
   }
 
   ckrscr_t& with_waitrs(CKRSCR_RS rs) {
-    this->bits.waitrs = (uint8_t)rs;
+    this->bits.waitrs = rs;
     return *this;
-  }
-
-  void set_waitrs(CKRSCR_RS rs) volatile {
-    this->bits.waitrs = (uint8_t)rs;
   }
 
   ckrscr_t& with_stoprs(CKRSCR_RS rs) {
-    this->bits.stoprs = (uint8_t)rs;
+    this->bits.stoprs = rs;
     return *this;
-  }
-
-  void set_stoprs(CKRSCR_RS rs) volatile {
-    this->bits.stoprs = (uint8_t)rs;
   }
 
   void set(const ckrscr_t& that) volatile {
@@ -721,35 +670,17 @@ typedef union bakcr_t {
   }
 } bakcr_t;
 
-enum class WDTC_DIV : uint8_t {
-  DIV_2 = 0,
-  DIV_16 = 1,
-  DIV_128 = 2,
-  DIV_LO_16 = 3,
-};
-
 typedef struct wdtc_t {
   unsigned int reserved0:6;
-  unsigned int div:2;
-
-  void set(WDTC_DIV div) volatile {
-    this->div = (uint8_t)div;
-  }
+  WDTC_DIV div:2;
 } wdtc_t;
-
-enum class FLTR_SEL : uint8_t {
-  NO_FILTER = 0,
-  F1 = 1,
-  F8 = 2,
-  F32 = 3,
-};
 
 typedef union intf0_t {
   struct {
-    unsigned int int0f:2;
-    unsigned int int1f:2;
-    unsigned int int2f:2;
-    unsigned int int3f:2;
+    FLTR_SEL int0f:2;
+    FLTR_SEL int1f:2;
+    FLTR_SEL int2f:2;
+    FLTR_SEL int3f:2;
   } bits;
   uint8_t as_uint8;
 
@@ -760,39 +691,23 @@ typedef union intf0_t {
   }
 
   intf0_t& with_int0(FLTR_SEL sel) {
-    this->bits.int0f = (uint8_t)sel;
+    this->bits.int0f = sel;
     return *this;
-  }
-
-  void set_int0(FLTR_SEL sel) volatile {
-    this->bits.int0f = (uint8_t)sel;
   }
 
   intf0_t& with_int1(FLTR_SEL sel) {
-    this->bits.int1f = (uint8_t)sel;
+    this->bits.int1f = sel;
     return *this;
-  }
-
-  void set_int1(FLTR_SEL sel) volatile {
-    this->bits.int1f = (uint8_t)sel;
   }
 
   intf0_t& with_int2(FLTR_SEL sel) {
-    this->bits.int2f = (uint8_t)sel;
+    this->bits.int2f = sel;
     return *this;
-  }
-
-  void with_int2(FLTR_SEL sel) volatile {
-    this->bits.int2f = (uint8_t)sel;
   }
 
   intf0_t& with_int3(FLTR_SEL sel) {
-    this->bits.int3f = (uint8_t)sel;
+    this->bits.int3f = sel;
     return *this;
-  }
-
-  void set_int3(FLTR_SEL sel) volatile {
-    this->bits.int3f = (uint8_t)sel;
   }
 
   void set(const intf0_t& that) volatile {
@@ -800,19 +715,12 @@ typedef union intf0_t {
   }
 } intf0_t;
 
-enum class ISCR0_EDGE : uint8_t {
-  FALLING = 0,
-  RISING = 1,
-  NOT_SET = 2,
-  BOTH = 3,
-};
-
 typedef union iscr0_t {
   struct {
-    unsigned int int0s:2;
-    unsigned int int1s:2;
-    unsigned int int2s:2;
-    unsigned int int3s:2;
+    ISCR0_EDGE int0s:2;
+    ISCR0_EDGE int1s:2;
+    ISCR0_EDGE int2s:2;
+    ISCR0_EDGE int3s:2;
   } bits;
   uint8_t as_uint8;
 
@@ -823,39 +731,23 @@ typedef union iscr0_t {
   }
 
   iscr0_t& with_int0(ISCR0_EDGE edge) {
-    this->bits.int0s = (uint8_t)edge;
+    this->bits.int0s = edge;
     return *this;
-  }
-
-  void set_int0(ISCR0_EDGE edge) volatile {
-    this->bits.int0s = (uint8_t)edge;
   }
 
   iscr0_t& with_int1(ISCR0_EDGE edge) {
-    this->bits.int1s = (uint8_t)edge;
+    this->bits.int1s = edge;
     return *this;
-  }
-
-  void set_int1(ISCR0_EDGE edge) volatile {
-    this->bits.int1s = (uint8_t)edge;
   }
 
   iscr0_t& with_int2(ISCR0_EDGE edge) {
-    this->bits.int2s = (uint8_t)edge;
+    this->bits.int2s = edge;
     return *this;
-  }
-
-  void set_int2(ISCR0_EDGE edge) volatile {
-    this->bits.int2s = (uint8_t)edge;
   }
 
   iscr0_t& with_int3(ISCR0_EDGE edge) {
-    this->bits.int3s = (uint8_t)edge;
+    this->bits.int3s = edge;
     return *this;
-  }
-
-  void set_int3(ISCR0_EDGE edge) volatile {
-    this->bits.int3s = (uint8_t)edge;
   }
 
   void set(const iscr0_t& that) volatile {
@@ -863,21 +755,16 @@ typedef union iscr0_t {
   }
 } iscr0_t;
 
-enum class KIEN_EDGE : uint8_t {
-  FALING = 0,
-  RIGINS = 1,
-};
-
 typedef union kien_t {
   struct {
     bool is_ki0_enabled:1;
-    unsigned int ki0_edge:1;
+    KIEN_EDGE ki0_edge:1;
     bool is_ki1_enabled:1;
-    unsigned int ki1_edge:1;
+    KIEN_EDGE ki1_edge:1;
     bool is_ki2_enabled:1;
-    unsigned int ki2_edge:1;
+    KIEN_EDGE ki2_edge:1;
     bool is_ki3_enabled:1;
-    unsigned int ki3_edge:1;
+    KIEN_EDGE ki3_edge:1;
   } bits;
   uint8_t as_uint8;
 
@@ -893,12 +780,8 @@ typedef union kien_t {
   }
 
   kien_t& with_ki0_edge(KIEN_EDGE edge) {
-    this->bits.ki0_edge = (uint8_t)edge;
+    this->bits.ki0_edge = edge;
     return *this;
-  }
-
-  void set_ki0_edge(KIEN_EDGE edge) volatile {
-    this->bits.ki0_edge = (uint8_t)edge;
   }
 
   kien_t& with_ki1_enabled(bool enabled) {
@@ -907,12 +790,8 @@ typedef union kien_t {
   }
 
   kien_t& with_ki1_edge(KIEN_EDGE edge) {
-    this->bits.ki1_edge = (uint8_t)edge;
+    this->bits.ki1_edge = edge;
     return *this;
-  }
-
-  void set_ki1_edge(KIEN_EDGE edge) volatile {
-    this->bits.ki1_edge = (uint8_t)edge;
   }
 
   kien_t& with_ki2_enabled(bool enabled) {
@@ -921,12 +800,8 @@ typedef union kien_t {
   }
 
   kien_t& with_ki2_edge(KIEN_EDGE edge) {
-    this->bits.ki2_edge = (uint8_t)edge;
+    this->bits.ki2_edge = edge;
     return *this;
-  }
-
-  void set_ki2_edge(KIEN_EDGE edge) volatile {
-    this->bits.ki2_edge = (uint8_t)edge;
   }
 
   kien_t& with_ki3_enabled(bool enabled) {
@@ -935,12 +810,8 @@ typedef union kien_t {
   }
 
   kien_t& with_ki3_edge(KIEN_EDGE edge) {
-    this->bits.ki3_edge = (uint8_t)edge;
+    this->bits.ki3_edge = edge;
     return *this;
-  }
-
-  void set_ki3_edge(KIEN_EDGE edge) volatile {
-    this->bits.ki3_edge = (uint8_t)edge;
   }
 
   void set(const kien_t& that) volatile {
@@ -948,16 +819,10 @@ typedef union kien_t {
   }
 } kien_t;
 
-enum class ITR_LEVEL : uint8_t {
-  DISABLED = 0,
-  LEVEL_1 = 1,
-  LEVEL_2 = 2,
-};
-
 typedef union ilvl0_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int flash_ready:2;
+    ITR_LEVEL flash_ready:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -969,12 +834,8 @@ typedef union ilvl0_t {
   }
 
   ilvl0_t& with_flash_ready(ITR_LEVEL lvl) {
-    this->bits.flash_ready = (uint8_t)lvl;
+    this->bits.flash_ready = lvl;
     return *this;
-  }
-
-  void set_flash_ready(ITR_LEVEL lvl) volatile {
-    this->bits.flash_ready = (uint8_t)lvl;
   }
 
   void set(const ilvl0_t& that) volatile {
@@ -984,9 +845,9 @@ typedef union ilvl0_t {
 
 typedef union ilvl2_t {
   struct {
-    unsigned int comp_b1:2;
+    ITR_LEVEL comp_b1:2;
     unsigned int reserved0:2;
-    unsigned int comp_b3:2;
+    ITR_LEVEL comp_b3:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -998,21 +859,13 @@ typedef union ilvl2_t {
   }
 
   ilvl2_t& with_comp_b3(ITR_LEVEL lvl) {
-    this->bits.comp_b3 = (uint8_t)lvl;
+    this->bits.comp_b3 = lvl;
     return *this;
-  }
-
-  void set_comp_b3(ITR_LEVEL lvl) volatile {
-    this->bits.comp_b3 = (uint8_t)lvl;
   }
 
   ilvl2_t& with_comp_b1(ITR_LEVEL lvl) {
-    this->bits.comp_b1 = (uint8_t)lvl;
+    this->bits.comp_b1 = lvl;
     return *this;
-  }
-
-  void set_comp_b1(ITR_LEVEL lvl) volatile {
-    this->bits.comp_b1 = (uint8_t)lvl;
   }
 
   void set(const ilvl2_t& that) volatile {
@@ -1023,7 +876,7 @@ typedef union ilvl2_t {
 typedef union ilvl3_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int timer_rc:2;
+    ITR_LEVEL timer_rc:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -1035,12 +888,8 @@ typedef union ilvl3_t {
   }
 
   ilvl3_t& with_time_rc(ITR_LEVEL lvl) {
-    this->bits.timer_rc = (uint8_t)lvl;
+    this->bits.timer_rc = lvl;
     return *this;
-  }
-
-  void set_timer_rc(ITR_LEVEL lvl) volatile {
-    this->bits.timer_rc = (uint8_t)lvl;
   }
 
   void set(const ilvl2_t& that) volatile {
@@ -1051,7 +900,7 @@ typedef union ilvl3_t {
 typedef union ilvl6_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int key_input:2;
+    ITR_LEVEL key_input:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -1063,12 +912,8 @@ typedef union ilvl6_t {
   }
 
   ilvl6_t& with_key_input(ITR_LEVEL lvl) {
-    this->bits.key_input = (uint8_t)lvl;
+    this->bits.key_input = lvl;
     return *this;
-  }
-
-  void set_key_input(ITR_LEVEL lvl) volatile {
-    this->bits.key_input = (uint8_t)lvl;
   }
 
   void set(const ilvl6_t& that) volatile {
@@ -1078,7 +923,7 @@ typedef union ilvl6_t {
 
 typedef union ilvl7_t {
   struct {
-    unsigned int adc:2;
+    ITR_LEVEL adc:2;
     unsigned int reserved1:6;
   } bits;
   uint8_t as_uint8_t;
@@ -1090,12 +935,8 @@ typedef union ilvl7_t {
   }
 
   ilvl7_t& with_adc(ITR_LEVEL lvl) {
-    this->bits.adc = (uint8_t)lvl;
+    this->bits.adc = lvl;
     return *this;
-  }
-
-  void set_adc(ITR_LEVEL lvl) volatile {
-    this->bits.adc = (uint8_t)lvl;
   }
 
   void set(const ilvl7_t& that) volatile {
@@ -1106,7 +947,7 @@ typedef union ilvl7_t {
 typedef union ilvl8_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int uart_tx:2;
+    ITR_LEVEL uart_tx:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -1118,12 +959,8 @@ typedef union ilvl8_t {
   }
 
   ilvl8_t& with_uart_tx(ITR_LEVEL lvl) {
-    this->bits.uart_tx = (uint8_t)lvl;
+    this->bits.uart_tx = lvl;
     return *this;
-  }
-
-  void set_uart_tx(ITR_LEVEL lvl) volatile {
-    this->bits.uart_tx = (uint8_t)lvl;
   }
 
   void set(const ilvl8_t& that) volatile {
@@ -1133,7 +970,7 @@ typedef union ilvl8_t {
 
 typedef union ilvl9_t {
   struct {
-    unsigned int uart_rx:2;
+    ITR_LEVEL uart_rx:2;
     unsigned int reserved0:6;
   } bits;
   uint8_t as_uint8_t;
@@ -1145,12 +982,8 @@ typedef union ilvl9_t {
   }
 
   ilvl9_t& with_uart_rx(ITR_LEVEL lvl) {
-    this->bits.uart_rx = (uint8_t)lvl;
+    this->bits.uart_rx = lvl;
     return *this;
-  }
-
-  void set_uart_rx(ITR_LEVEL lvl) volatile {
-    this->bits.uart_rx = (uint8_t)lvl;
   }
 
   void set(const ilvl9_t& that) volatile {
@@ -1161,7 +994,7 @@ typedef union ilvl9_t {
 typedef union ilvla_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int int2:2;
+    ITR_LEVEL int2:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -1173,12 +1006,8 @@ typedef union ilvla_t {
   }
 
   ilvla_t& with_int2(ITR_LEVEL lvl) {
-    this->bits.int2 = (uint8_t)lvl;
+    this->bits.int2 = lvl;
     return *this;
-  }
-
-  void set_int2(ITR_LEVEL lvl) volatile {
-    this->bits.int2 = (uint8_t)lvl;
   }
 
   void set(const ilvla_t& that) volatile {
@@ -1189,9 +1018,9 @@ typedef union ilvla_t {
 typedef union ilvlb_t {
   struct {
     unsigned int reserved0:2;
-    unsigned int ped_timer:2;
+    ITR_LEVEL ped_timer:2;
     unsigned int reserved1:2;
-    unsigned int timer_rj2:2;
+    ITR_LEVEL timer_rj2:2;
   } bits;
   uint8_t as_uint8_t;
 
@@ -1202,21 +1031,13 @@ typedef union ilvlb_t {
   }
 
   ilvlb_t& with_ped_timer(ITR_LEVEL lvl) {
-    this->bits.ped_timer = (uint8_t)lvl;
+    this->bits.ped_timer = lvl;
     return *this;
-  }
-
-  void set_ped_timer(ITR_LEVEL lvl) volatile {
-    this->bits.ped_timer = (uint8_t)lvl;
   }
 
   ilvlb_t& with_timer_rj2(ITR_LEVEL lvl) {
-    this->bits.timer_rj2 = (uint8_t)lvl;
+    this->bits.timer_rj2 = lvl;
     return *this;
-  }
-
-  void set_timer_rj2(ITR_LEVEL lvl) volatile {
-    this->bits.timer_rj2 = (uint8_t)lvl;
   }
 
   void set(const ilvlb_t& that) volatile {
@@ -1227,9 +1048,9 @@ typedef union ilvlb_t {
 typedef union ilvlc_t {
   struct {
     unsigned int reserved0:2;
-    unsigned int int1:2;
+    ITR_LEVEL int1:2;
     unsigned int reserved1:2;
-    unsigned int timer_rb2:2;
+    ITR_LEVEL timer_rb2:2;
   } bits;
   uint8_t as_uint8_t;
 
@@ -1240,21 +1061,13 @@ typedef union ilvlc_t {
   }
 
   ilvlc_t& with_int1(ITR_LEVEL lvl) {
-    this->bits.int1 = (uint8_t)lvl;
+    this->bits.int1 = lvl;
     return *this;
-  }
-
-  void set_int1(ITR_LEVEL lvl) volatile {
-    this->bits.int1 = (uint8_t)lvl;
   }
 
   ilvlc_t& with_timer_rb2(ITR_LEVEL lvl) {
-    this->bits.timer_rb2 = (uint8_t)lvl;
+    this->bits.timer_rb2 = lvl;
     return *this;
-  }
-
-  void set_timer_rb2(ITR_LEVEL lvl) volatile {
-    this->bits.timer_rb2 = (uint8_t)lvl;
   }
 
   void set(const ilvlc_t& that) volatile {
@@ -1264,7 +1077,7 @@ typedef union ilvlc_t {
 
 typedef union ilvld_t {
   struct {
-    unsigned int int3:2;
+    ITR_LEVEL int3:2;
     unsigned int reserved0:6;
   } bits;
   uint8_t as_uint8_t;
@@ -1276,12 +1089,8 @@ typedef union ilvld_t {
   }
 
   ilvld_t& with_int3(ITR_LEVEL lvl) {
-    this->bits.int3 = (uint8_t)lvl;
+    this->bits.int3 = lvl;
     return *this;
-  }
-
-  void set_int3(ITR_LEVEL lvl) volatile {
-    this->bits.int3 = (uint8_t)lvl;
   }
 
   void set(const ilvld_t& that) volatile {
@@ -1292,7 +1101,7 @@ typedef union ilvld_t {
 typedef union ilvle_t {
   struct {
     unsigned int reserved0:4;
-    unsigned int int0:2;
+    ITR_LEVEL int0:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8_t;
@@ -1304,23 +1113,14 @@ typedef union ilvle_t {
   }
 
   ilvle_t& with_int0(ITR_LEVEL lvl) {
-    this->bits.int0 = (uint8_t)lvl;
+    this->bits.int0 = lvl;
     return *this;
-  }
-
-  void set_int0(ITR_LEVEL lvl) volatile {
-    this->bits.int0 = (uint8_t)lvl;
   }
 
   void set(const ilvle_t& that) volatile {
     this->as_uint8_t = that.as_uint8_t;
   }
 } ilvle_t;
-
-enum class VCAC_EDGE : uint8_t {
-  ONE_WAY_EDGE = 0,
-  TWO_WAY_EDGE = 1,
-};
 
 typedef union vca2_t {
   struct {
@@ -1358,28 +1158,10 @@ typedef union vca2_t {
   }
 } vca2_t;
 
-enum class VD1LS_DETECT_LEVEL : uint8_t {
-  V_2_35 = 0,
-  V_2_65 = 1,
-  V_2_95 = 2,
-  V_3_25 = 3,
-  V_3_55 = 4,
-  V_3_85 = 5,
-  V_4_15 = 6,
-  V_4_45 = 7,
-};
-
-enum class SMPL_CLOCK_DIV : uint8_t {
-  DIV_1 = 0,
-  DIV_2 = 1,
-  DIV_4 = 2,
-  DIV_8 = 3,
-};
-
 typedef union vd1ls_t {
   struct {
     unsigned int reserved0:1;
-    unsigned int dtct_lvl:3;
+    VD1LS_DETECT_LEVEL dtct_lvl:3;
     unsigned int reserved1:4;
   } bits;
   uint8_t as_uint8;
@@ -1391,7 +1173,7 @@ typedef union vd1ls_t {
   }
 
   vd1ls_t& with_dtct_lvl(VD1LS_DETECT_LEVEL lvl) {
-    this->bits.dtct_lvl = (uint8_t)lvl;
+    this->bits.dtct_lvl = lvl;
     return *this;
   }
 
@@ -1405,7 +1187,7 @@ typedef union vw0c_t {
     bool is_v_mon_rst_enabled:1;
     bool is_v_filter_disabled:1;
     unsigned int reserved0:2;
-    unsigned int vw0f:2;
+    SMPL_CLOCK_DIV vw0f:2;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8;
@@ -1427,12 +1209,8 @@ typedef union vw0c_t {
   }
 
   vw0c_t& with_smpl_clk(SMPL_CLOCK_DIV div) {
-    this->bits.vw0f = (uint8_t)div;
+    this->bits.vw0f = div;
     return *this;
-  }
-
-  void set_smpl_clk(SMPL_CLOCK_DIV div) volatile {
-    this->bits.vw0f = (uint8_t)div;
   }
 
   void set(const vw0c_t& that) volatile {
@@ -1440,30 +1218,15 @@ typedef union vw0c_t {
   }
 } vw0c_t;
 
-enum class VW1C_V_CHG_DETECT : uint8_t {
-  NOT_DETECTED = 0,
-  DETECTED_VDET1 = 1,
-};
-
-enum class VW1C_VDET1 : uint8_t {
-  VCC_LT_VDET1 = 0,
-  VCC_GE_VDET1 = 1,
-};
-
-enum class VW1C_ITR_SRC {
-  VCC_GE_VDET1 = 0,
-  VCC_LE_VDET1 = 1,
-};
-
 typedef union vw1c_t {
   struct {
     bool is_v_mon_itr_enabled:1;
     bool is_v_mon_filter_disabled:1;
-    unsigned int vw1c2:1;
-    unsigned int vw1c3:1;
-    unsigned int vw1f:2;
+    VW1C_V_CHG_DETECT vw1c2:1;
+    VW1C_VDET1 vw1c3:1;
+    SMPL_CLOCK_DIV vw1f:2;
     unsigned int reserved0:1;
-    unsigned int vw1c7:1;
+    VW1C_ITR_SRC vw1c7:1;
   } bits;
   uint8_t as_uint8;
 
@@ -1484,39 +1247,23 @@ typedef union vw1c_t {
   }
 
   vw1c_t& with_chg_detected(VW1C_V_CHG_DETECT dtct) {
-    this->bits.vw1c2 = (uint8_t)dtct;
+    this->bits.vw1c2 = dtct;
     return *this;
-  }
-
-  void set_chg_detected(VW1C_V_CHG_DETECT dtct) volatile {
-    this->bits.vw1c2 = (uint8_t)dtct;
   }
 
   vw1c_t& with_detect(VW1C_VDET1 v) {
-    this->bits.vw1c3 = (uint8_t)v;
+    this->bits.vw1c3 = v;
     return *this;
-  }
-
-  void set_detect(VW1C_VDET1 v) volatile {
-    this->bits.vw1c3 = (uint8_t)v;
   }
 
   vw1c_t& with_smpl_clk(SMPL_CLOCK_DIV div) {
-    this->bits.vw1f = (uint8_t)div;
+    this->bits.vw1f = div;
     return *this;
-  }
-
-  void set_smpl_clk(SMPL_CLOCK_DIV div) volatile {
-    this->bits.vw1f = (uint8_t)div;
   }
 
   vw1c_t& with_itr_src(VW1C_ITR_SRC src) {
-    this->bits.vw1c7 = (uint8_t)src;
+    this->bits.vw1c7 = src;
     return *this;
-  }
-
-  void set_itr_src(VW1C_ITR_SRC src) volatile {
-    this->bits.vw1c7 = (uint8_t)src;
   }
 
   void set(const vw1c_t that) volatile {
@@ -1524,38 +1271,12 @@ typedef union vw1c_t {
   }
 } vw1c_t;
 
-enum class RSTFR_START_UP : uint8_t {
-  COLD_START_UP = 0,
-  WARM_START_UP = 1,
-};
-
-enum class ADMOD_CKS : uint8_t {
-  F_8 = 0,
-  F_4 = 1,
-  F_2 = 2,
-  F_1 = 3,
-  F_AD = 4,
-};
-
-enum class ADMOD_MODE : uint8_t {
-  ONE_SHOT = 0,
-  REPEAT = 1,
-  SINGLE_SWEEP = 2,
-  REPEAT_SWEEP = 3,
-};
-
-enum class ADMOD_TRIGGER : uint8_t {
-  TIMER_RC = 0,
-  CV_TRIGGER_TIMER_RC = 2,
-  ADTRG = 3,
-};
-
 typedef union admod_t {
   struct {
-    unsigned int cks:3;
-    unsigned int md:2;
+    ADMOD_CKS cks:3;
+    ADMOD_MODE md:2;
     unsigned reserved0:1;
-    unsigned int trigger:2;
+    ADMOD_TRIGGER trigger:2;
   } bits;
   uint8_t as_uint8;
 
@@ -1566,30 +1287,18 @@ typedef union admod_t {
   }
 
   admod_t& with_cks(ADMOD_CKS clk) {
-    this->bits.cks = (uint8_t)clk;
+    this->bits.cks = clk;
     return *this;
-  }
-
-  void set_cks(ADMOD_CKS clk) volatile {
-    this->bits.cks = (uint8_t)clk;
   }
 
   admod_t& with_mode(ADMOD_MODE mode) {
-    this->bits.md = (uint8_t)mode;
+    this->bits.md = mode;
     return *this;
-  }
-
-  void set_mode(ADMOD_MODE mode) volatile {
-    this->bits.md = (uint8_t)mode;
   }
 
   admod_t& with_trigger(ADMOD_TRIGGER trigger) {
-    this->bits.trigger = (uint8_t)trigger;
+    this->bits.trigger = trigger;
     return *this;
-  }
-
-  void set_trigger(ADMOD_TRIGGER trigger) volatile {
-    this->bits.trigger = (uint8_t)trigger;
   }
 
   void set(const admod_t& that) volatile {
@@ -1598,17 +1307,11 @@ typedef union admod_t {
 
 } admod_t;
 
-enum class ADINSEL_ADGSEL : uint8_t {
-  AN0_1 = 0,
-  AN2_3 = 1,
-  AN4_7 = 2,
-};
-
 typedef union adinsel_t {
   struct {
     unsigned int ch0:1;
     unsigned int reserved0:5;
-    unsigned int adgsel:2;
+    ADINSEL_ADGSEL adgsel:2;
   } bits;
   uint8_t as_uint8;
 
@@ -1624,12 +1327,8 @@ typedef union adinsel_t {
   }
 
   adinsel_t& with_adgsel(ADINSEL_ADGSEL adgsel) {
-    this->bits.adgsel = (uint8_t)adgsel;
+    this->bits.adgsel = adgsel;
     return *this;
-  }
-
-  void set_adgsel(ADINSEL_ADGSEL adgsel) volatile {
-    this->bits.adgsel = (uint8_t)adgsel;
   }
 
   void set(const adinsel_t that) volatile {
@@ -1666,21 +1365,16 @@ typedef union adicsr_t {
   }
 } adicsr_t;
 
-enum class PD_DIR : uint8_t {
-  IN = 0,
-  OUT = 1,
-};
-
 typedef union pd1_t {
   struct {
-    unsigned int b0:1;
-    unsigned int b1:1;
-    unsigned int b2:1;
-    unsigned int b3:1;
-    unsigned int b4:1;
-    unsigned int b5:1;
-    unsigned int b6:1;
-    unsigned int b7:1;
+    PD_DIR b0:1;
+    PD_DIR b1:1;
+    PD_DIR b2:1;
+    PD_DIR b3:1;
+    PD_DIR b4:1;
+    PD_DIR b5:1;
+    PD_DIR b6:1;
+    PD_DIR b7:1;
   } bits;
   uint8_t as_uint8;
 
@@ -1691,75 +1385,43 @@ typedef union pd1_t {
   }
 
   pd1_t& with_p1_0(PD_DIR dir) {
-    this->bits.b0 = (uint8_t)dir;
+    this->bits.b0 = dir;
     return *this;
-  }
-
-  void set_p1_0(PD_DIR dir) volatile {
-    this->bits.b0 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_1(PD_DIR dir) {
-    this->bits.b1 = (uint8_t)dir;
+    this->bits.b1 = dir;
     return *this;
-  }
-
-  void set_p1_1(PD_DIR dir) volatile {
-    this->bits.b1 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_2(PD_DIR dir) {
-    this->bits.b2 = (uint8_t)dir;
+    this->bits.b2 = dir;
     return *this;
-  }
-
-  void set_p1_2(PD_DIR dir) volatile {
-    this->bits.b2 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_3(PD_DIR dir) {
-    this->bits.b3 = (uint8_t)dir;
+    this->bits.b3 = dir;
     return *this;
-  }
-
-  void set_p1_3(PD_DIR dir) volatile {
-    this->bits.b3 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_4(PD_DIR dir) {
-    this->bits.b4 = (uint8_t)dir;
+    this->bits.b4 = dir;
     return *this;
-  }
-
-  void set_p1_4(PD_DIR dir) volatile {
-    this->bits.b4 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_5(PD_DIR dir) {
-    this->bits.b5 = (uint8_t)dir;
+    this->bits.b5 = dir;
     return *this;
-  }
-
-  void set_p1_5(PD_DIR dir) volatile {
-    this->bits.b5 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_6(PD_DIR dir) {
-    this->bits.b6 = (uint8_t)dir;
+    this->bits.b6 = dir;
     return *this;
-  }
-
-  void set_p1_6(PD_DIR dir) volatile {
-    this->bits.b6 = (uint8_t)dir;
   }
 
   pd1_t& with_p1_7(PD_DIR dir) {
-    this->bits.b7 = (uint8_t)dir;
+    this->bits.b7 = dir;
     return *this;
-  }
-
-  void set_p1_7(PD_DIR dir) volatile {
-    this->bits.b7 = (uint8_t)dir;
   }
 
   void set(const pd1_t& that) volatile {
@@ -1770,11 +1432,11 @@ typedef union pd1_t {
 typedef union pd3_t {
   struct {
     unsigned int reserved0:3;
-    unsigned int b3:1;
-    unsigned int b4:1;
-    unsigned int b5:1;
+    PD_DIR b3:1;
+    PD_DIR b4:1;
+    PD_DIR b5:1;
     unsigned int reserved1:1;
-    unsigned int b7:1;
+    PD_DIR b7:1;
   } bits;
   uint8_t as_uint8;
 
@@ -1785,39 +1447,23 @@ typedef union pd3_t {
   }
 
   pd3_t& with_p3_3(PD_DIR dir) {
-    this->bits.b3 = (uint8_t)dir;
+    this->bits.b3 = dir;
     return *this;
-  }
-
-  void set_p3_3(PD_DIR dir) volatile {
-    this->bits.b3 = (uint8_t)dir;
   }
 
   pd3_t& with_p3_4(PD_DIR dir) {
-    this->bits.b4 = (uint8_t)dir;
+    this->bits.b4 = dir;
     return *this;
-  }
-
-  void set_p3_4(PD_DIR dir) volatile {
-    this->bits.b4 = (uint8_t)dir;
   }
 
   pd3_t& with_p3_5(PD_DIR dir) {
-    this->bits.b5 = (uint8_t)dir;
+    this->bits.b5 = dir;
     return *this;
-  }
-
-  void set_p3_5(PD_DIR dir) volatile {
-    this->bits.b5 = (uint8_t)dir;
   }
 
   pd3_t& with_p3_7(PD_DIR dir) {
-    this->bits.b7 = (uint8_t)dir;
+    this->bits.b7 = dir;
     return *this;
-  }
-
-  void set_p3_7(PD_DIR dir) volatile {
-    this->bits.b7 = (uint8_t)dir;
   }
 
   void set(const pd3_t& that) volatile {
@@ -1828,11 +1474,11 @@ typedef union pd3_t {
 typedef union pd4_t {
   struct {
     unsigned int reserved0:2;
-    unsigned int b2:1;
+    PD_DIR b2:1;
     unsigned int reserved1:2;
-    unsigned int b5:1;
-    unsigned int b6:1;
-    unsigned int b7:1;
+    PD_DIR b5:1;
+    PD_DIR b6:1;
+    PD_DIR b7:1;
   } bits;
   uint8_t as_uint8;
 
@@ -1843,39 +1489,23 @@ typedef union pd4_t {
   }
 
   pd4_t& with_p4_2(PD_DIR dir) {
-    this->bits.b2 = (uint8_t)dir;
+    this->bits.b2 = dir;
     return *this;
-  }
-
-  void set_p4_2(PD_DIR dir) volatile {
-    this->bits.b2 = (uint8_t)dir;
   }
 
   pd4_t& with_p4_5(PD_DIR dir) {
-    this->bits.b5 = (uint8_t)dir;
+    this->bits.b5 = dir;
     return *this;
-  }
-
-  void set_p4_5(PD_DIR dir) volatile {
-    this->bits.b5 = (uint8_t)dir;
   }
 
   pd4_t& with_p4_6(PD_DIR dir) {
-    this->bits.b6 = (uint8_t)dir;
+    this->bits.b6 = dir;
     return *this;
-  }
-
-  void set_p4_6(PD_DIR dir) volatile {
-    this->bits.b6 = (uint8_t)dir;
   }
 
   pd4_t& with_p4_7(PD_DIR dir) {
-    this->bits.b7 = (uint8_t)dir;
+    this->bits.b7 = dir;
     return *this;
-  }
-
-  void set_p4_7(PD_DIR dir) volatile {
-    this->bits.b7 = (uint8_t)dir;
   }
 
   void set(const pd4_t& that) volatile {
@@ -2179,15 +1809,10 @@ typedef union pur4_t {
   }
 } pur4_t;
 
-enum class PINSR_INPUT : uint8_t {
-  TRJIO_PIN = 0,
-  VCOUT1 = 1,
-};
-
 typedef union pinsr_t {
   struct {
     unsigned int reserved0:6;
-    unsigned int trjiosel:1;
+    PINSR_INPUT trjiosel:1;
     bool read_level:1;
   } bits;
   uint8_t as_uint8;
@@ -2199,12 +1824,8 @@ typedef union pinsr_t {
   }
 
   pinsr_t& with_trjiosel(PINSR_INPUT in) {
-    this->bits.trjiosel = (uint8_t)in;
+    this->bits.trjiosel = in;
     return *this;
-  }
-
-  void set_trjiosel(PINSR_INPUT in) volatile {
-    this->bits.trjiosel = (uint8_t)in;
   }
 
   pinsr_t& with_read_level(bool enabled) {
@@ -2217,18 +1838,13 @@ typedef union pinsr_t {
   }
 } pinsr_t;
 
-enum class DRIVE_CAPACITY : uint8_t {
-  LOW = 0,
-  HIGH = 1,
-};
-
 typedef union drr1_t {
   struct {
     unsigned int reserved0:2;
-    unsigned int p1_2:1;
-    unsigned int p1_3:1;
-    unsigned int p1_4:1;
-    unsigned int p1_5:1;
+    DRIVE_CAPACITY p1_2:1;
+    DRIVE_CAPACITY p1_3:1;
+    DRIVE_CAPACITY p1_4:1;
+    DRIVE_CAPACITY p1_5:1;
     unsigned int reserved1:2;
   } bits;
   uint8_t as_uint8;
@@ -2240,39 +1856,23 @@ typedef union drr1_t {
   }
 
   drr1_t& with_p1_2(DRIVE_CAPACITY drv) {
-    this->bits.p1_2 = (uint8_t)drv;
+    this->bits.p1_2 = drv;
     return *this;
-  }
-
-  void set_p1_2(DRIVE_CAPACITY drv) volatile {
-    this->bits.p1_2 = (uint8_t)drv;
   }
 
   drr1_t& with_p1_3(DRIVE_CAPACITY drv) {
-    this->bits.p1_3 = (uint8_t)drv;
+    this->bits.p1_3 = drv;
     return *this;
-  }
-
-  void set_p1_3(DRIVE_CAPACITY drv) volatile {
-    this->bits.p1_3 = (uint8_t)drv;
   }
 
   drr1_t& with_p1_4(DRIVE_CAPACITY drv) {
-    this->bits.p1_4 = (uint8_t)drv;
+    this->bits.p1_4 = drv;
     return *this;
-  }
-
-  void set_p1_4(DRIVE_CAPACITY drv) volatile {
-    this->bits.p1_4 = (uint8_t)drv;
   }
 
   drr1_t& with_p1_5(DRIVE_CAPACITY drv) {
-    this->bits.p1_5 = (uint8_t)drv;
+    this->bits.p1_5 = drv;
     return *this;
-  }
-
-  void set_p1_5(DRIVE_CAPACITY drv) volatile {
-    this->bits.p1_5 = (uint8_t)drv;
   }
 
   void set(const drr1_t& that) volatile {
@@ -2283,11 +1883,11 @@ typedef union drr1_t {
 typedef union drr3_t {
   struct {
     unsigned int reserved0:3;
-    unsigned int p3_3:1;
-    unsigned int p3_4:1;
-    unsigned int p3_5:1;
+    DRIVE_CAPACITY p3_3:1;
+    DRIVE_CAPACITY p3_4:1;
+    DRIVE_CAPACITY p3_5:1;
     unsigned int reserved1:1;
-    unsigned int p3_7:1;
+    DRIVE_CAPACITY p3_7:1;
   } bits;
   uint8_t as_uint8;
 
@@ -2298,39 +1898,23 @@ typedef union drr3_t {
   }
 
   drr3_t& with_p3_3(DRIVE_CAPACITY drv) {
-    this->bits.p3_3 = (uint8_t)drv;
+    this->bits.p3_3 = drv;
     return *this;
-  }
-
-  void set_p3_3(DRIVE_CAPACITY drv) volatile {
-    this->bits.p3_3 = (uint8_t)drv;
   }
 
   drr3_t& with_p3_4(DRIVE_CAPACITY drv) {
-    this->bits.p3_4 = (uint8_t)drv;
+    this->bits.p3_4 = drv;
     return *this;
-  }
-
-  void set_p3_4(DRIVE_CAPACITY drv) volatile {
-    this->bits.p3_4 = (uint8_t)drv;
   }
 
   drr3_t& with_p3_5(DRIVE_CAPACITY drv) {
-    this->bits.p3_5 = (uint8_t)drv;
+    this->bits.p3_5 = drv;
     return *this;
-  }
-
-  void set_p3_5(DRIVE_CAPACITY drv) volatile {
-    this->bits.p3_5 = (uint8_t)drv;
   }
 
   drr3_t& with_p3_7(DRIVE_CAPACITY drv) {
-    this->bits.p3_7 = (uint8_t)drv;
+    this->bits.p3_7 = drv;
     return *this;
-  }
-
-  void set_p3_7(DRIVE_CAPACITY drv) volatile {
-    this->bits.p3_7 = (uint8_t)drv;
   }
 
   void set(const drr3_t& that) volatile {
@@ -2486,16 +2070,11 @@ typedef union pod4_t {
   }
 } pod4_t;
 
-enum class PAMCR_PIN_FUNC : uint8_t {
-  AS_IO = 0,
-  AS_RESET = 1,
-};
-
 typedef union pamcr_t {
   struct {
     bool pa_0_od:1;
     unsigned int reserved0:3;
-    unsigned int pa0_func:1;
+    PAMCR_PIN_FUNC pa0_func:1;
     unsigned int reserved1:3;
   } bits;
   uint8_t as_uint8;
@@ -2512,12 +2091,8 @@ typedef union pamcr_t {
   }
 
   pamcr_t& with_pa0_func(PAMCR_PIN_FUNC func) {
-    this->bits.pa0_func = (uint8_t)func;
+    this->bits.pa0_func = func;
     return *this;
-  }
-
-  void set_pa0_func(PAMCR_PIN_FUNC func) volatile {
-    this->bits.pa0_func = (uint8_t)func;
   }
 
   void set(const pamcr_t& that) volatile {
@@ -2525,55 +2100,16 @@ typedef union pamcr_t {
   }
 } pamcr_t;
 
-enum class PM1_B0_FUNC : uint8_t {
-  IO_OR_AD = 0,
-  TRCIOD = 1,
-  KI0 = 2,
-};
-
-enum class PM1_B1_FUNC : uint8_t {
-  IO_OR_AD = 0,
-  TRCIOA_TRCTRG = 1,
-  KI1 = 2,
-};
-
-enum class PM1_B2_FUNC : uint8_t {
-  IO_OR_AD = 0,
-  TRCIOB = 1,
-  KI2 = 2,
-};
-
-enum class PM1_B3_FUNC : uint8_t {
-  IO_OR_AD = 0,
-  TRCIOC = 1,
-  KI3 = 2,
-  TRBO = 3,
-};
-
-enum class PM1_B6_FUNC : uint8_t {
-  IO_IVREF1 = 0,
-  CLK0 = 1,
-  TRJO = 2,
-  TRCIOB = 3
-};
-
-enum class PM1_B7_FUNC : uint8_t {
-  IO_AN7_IVCMP1 = 0,
-  INT1 = 1,
-  TRJIO = 2,
-  TRCCLK = 3
-};
-
 typedef union pm1_t {
   struct {
-    unsigned int b0_func:2;
-    unsigned int b1_func:2;
-    unsigned int b2_func:2;
-    unsigned int b3_func:2;
-    unsigned int b4_func:2;
-    unsigned int b5_func:2;
-    unsigned int b6_func:2;
-    unsigned int b7_func:2;
+    PM1_B0_FUNC b0_func:2;
+    PM1_B1_FUNC b1_func:2;
+    PM1_B2_FUNC b2_func:2;
+    PM1_B3_FUNC b3_func:2;
+    PM1_B4_FUNC b4_func:2;
+    PM1_B5_FUNC b5_func:2;
+    PM1_B6_FUNC b6_func:2;
+    PM1_B7_FUNC b7_func:2;
   } bits;
   uint16_t as_uint16;
 
@@ -2584,75 +2120,43 @@ typedef union pm1_t {
   }
 
   pm1_t& with_b0_func(PM1_B0_FUNC func) {
-    this->bits.b0_func = (uint8_t)func;
+    this->bits.b0_func = func;
     return *this;
-  }
-
-  void set_b0_func(PM1_B0_FUNC func) volatile {
-    this->bits.b0_func = (uint8_t)func;
   }
 
   pm1_t& with_b1_func(PM1_B1_FUNC func) {
-    this->bits.b1_func = (uint8_t)func;
+    this->bits.b1_func = func;
     return *this;
-  }
-
-  void set_b1_func(PM1_B1_FUNC func) volatile {
-    this->bits.b1_func = (uint8_t)func;
   }
 
   pm1_t& with_b2_func(PM1_B2_FUNC func) {
-    this->bits.b2_func = (uint8_t)func;
+    this->bits.b2_func = func;
     return *this;
-  }
-
-  void set_b2_func(PM1_B2_FUNC func) volatile {
-    this->bits.b2_func = (uint8_t)func;
   }
 
   pm1_t& with_b3_func(PM1_B3_FUNC func) {
-    this->bits.b3_func = (uint8_t)func;
+    this->bits.b3_func = func;
     return *this;
-  }
-
-  void set_b3_func(PM1_B3_FUNC func) volatile {
-    this->bits.b3_func = (uint8_t)func;
   }
 
   pm1_t& with_b4_func(PM1_B4_FUNC func) {
-    this->bits.b4_func = (uint8_t)func;
+    this->bits.b4_func = func;
     return *this;
-  }
-
-  void set_b4_func(PM1_B4_FUNC func) volatile {
-    this->bits.b4_func = (uint8_t)func;
   }
 
   pm1_t& with_b5_func(PM1_B5_FUNC func) {
-    this->bits.b5_func = (uint8_t)func;
+    this->bits.b5_func = func;
     return *this;
-  }
-
-  void set_b5_func(PM1_B5_FUNC func) volatile {
-    this->bits.b5_func = (uint8_t)func;
   }
 
   pm1_t& with_b6_func(PM1_B6_FUNC func) {
-    this->bits.b6_func = (uint8_t)func;
+    this->bits.b6_func = func;
     return *this;
-  }
-
-  void set_b6_func(PM1_B6_FUNC func) volatile {
-    this->bits.b6_func = (uint8_t)func;
   }
 
   pm1_t& with_b7_func(PM1_B7_FUNC func) {
-    this->bits.b7_func = (uint8_t)func;
+    this->bits.b7_func = func;
     return *this;
-  }
-
-  void set_b7_func(PM1_B7_FUNC func) volatile {
-    this->bits.b7_func = (uint8_t)func;
   }
 
   void set(const pm1_t& that) volatile {
@@ -2660,40 +2164,14 @@ typedef union pm1_t {
   }
 } pm1_t;
 
-enum class PM3_B3_FUNC : uint8_t {
-  IO_OR_IVCMP3 = 0,
-  TRCCLK = 1,
-  INT3 = 2,
-};
-
-enum class PM3_B4_FUNC : uint8_t {
-  IO_OR_IVREF3 = 0,
-  TRCIOC = 1,
-  INT2 = 2,
-};
-
-enum class PM3_B5_FUNC : uint8_t {
-  IO = 0,
-  TRCIOD = 1,
-  KI2 = 2,
-  VCOUT3 = 3,
-};
-
-enum class PM3_B7_FUNC : uint8_t {
-  IO = 0,
-  ADTRG = 1,
-  TRJO = 2,
-  TRCIOD = 3,
-};
-
 typedef union pm3_t {
   struct {
     unsigned int reserved0:6;
-    unsigned int b3_func:2;
-    unsigned int b4_func:2;
-    unsigned int b5_func:2;
+    PM3_B3_FUNC b3_func:2;
+    PM3_B4_FUNC b4_func:2;
+    PM3_B5_FUNC b5_func:2;
     unsigned int reserved1:2;
-    unsigned int b7_func:2;
+    PM3_B7_FUNC b7_func:2;
   } bits;
   uint16_t as_uint16;
 
@@ -2704,70 +2182,29 @@ typedef union pm3_t {
   }
 
   pm3_t& with_b3_func(PM3_B3_FUNC func) {
-    this->bits.b3_func = (uint8_t)func;
+    this->bits.b3_func = func;
     return *this;
-  }
-
-  void set_b3_func(PM3_B3_FUNC func) volatile {
-    this->bits.b3_func = (uint8_t)func;
   }
 
   pm3_t& with_b4_func(PM3_B4_FUNC func) {
-    this->bits.b4_func = (uint8_t)func;
+    this->bits.b4_func = func;
     return *this;
-  }
-
-  void set_b4_func(PM3_B4_FUNC func) volatile {
-    this->bits.b4_func = (uint8_t)func;
   }
 
   pm3_t& with_b5_func(PM3_B5_FUNC func) {
-    this->bits.b5_func = (uint8_t)func;
+    this->bits.b5_func = func;
     return *this;
-  }
-
-  void set_b5_func(PM3_B5_FUNC func) volatile {
-    this->bits.b5_func = (uint8_t)func;
   }
 
   pm3_t& with_b7_func(PM3_B7_FUNC func) {
-    this->bits.b7_func = (uint8_t)func;
+    this->bits.b7_func = func;
     return *this;
-  }
-
-  void set_b7_func(PM3_B7_FUNC func) volatile {
-    this->bits.b7_func = (uint8_t)func;
   }
 
   void set(const pm3_t& that) volatile {
     this->as_uint16 = that.as_uint16;
   }
 } pm3_t;
-
-enum class PM4_B2_FUNC : uint8_t {
-  IO = 0,
-  TRBO = 1,
-  TXD0 = 2,
-  KI3 = 3,
-};
-
-enum class PM4_B5_FUNC : uint8_t {
-  IO = 0,
-  INT0 = 1,
-  ADTRG = 2,
-};
-
-enum class PM4_B6_FUNC : uint8_t {
-  IO_OR_XIN_VCOUT1 = 0,
-  RXD0_OR_TRJIO = 1,
-  TXD0 = 2,
-  INT1 = 3,
-};
-
-enum class PM4_B7_FUNC : uint8_t {
-  IO_OR_XOUT = 0,
-  INT2 = 1,
-};
 
 typedef union pm4_t {
   struct {
@@ -2896,12 +2333,6 @@ typedef union trjcr_t {
   }
 } trjcr_t;
 
-enum class TRJIOC_CTRL : uint8_t {
-  ALWAYS = 0,
-  DURING_INT2_HIGH = 1,
-  TMR_RC = 2,
-};
-
 typedef union trjioc_t {
   struct {
     unsigned int tedgsel:1;
@@ -2950,26 +2381,6 @@ typedef union trjioc_t {
     this->as_uint8 = that.as_uint8;
   }
 } trjioc_t;
-
-enum class TRJMR_OP_MODE : uint8_t {
-  TIMER = 0,
-  PULSE_OUT = 1,
-  EVENT_COUNTER = 2,
-  MEASURE_PULSE_WIDTH = 3,
-  MEASURE_PULSE_PERIOD = 4,
-};
-
-enum class TRJMR_SOURCE : uint8_t {
-  F1 = 0,
-  F8 = 1,
-  FHOCO = 2,
-  H2 = 3,
-};
-
-enum class TIMER_CUTOFF : uint8_t {
-  SUPPLIED = 0,
-  CUT_OFF = 1,
-};
 
 typedef union trjmr_t {
   struct {
@@ -3022,18 +2433,6 @@ typedef union trjmr_t {
     this->as_uint8 = that.as_uint8;
   }
 } trjmr_t;
-
-enum class TRJISR_OUTPUT : uint8_t {
-  TRCIOD = 0,
-  TRCIOC = 1,
-  TRCIOB = 2,
-  TRCIOA = 3,
-};
-
-enum class TRJISR_COUNT_WHILE : uint8_t {
-  LOW = 0,
-  HIGH = 1,
-};
 
 typedef union trjisr_t {
   struct {
@@ -3161,16 +2560,6 @@ typedef union trbocr_t {
   }
 } trbocr_t;
 
-enum class TRBIOC_OUTPUT : uint8_t {
-  WAVEFORM = 0,
-  FIXED_VALUE = 1,
-};
-
-enum class TRBIOC_EDGE : uint8_t {
-  FALLING = 0,
-  RISING = 1,
-};
-
 typedef union trbioc_t {
   struct {
     unsigned int topl:1;
@@ -3214,34 +2603,6 @@ typedef union trbioc_t {
     this->as_uint8 = that.as_uint8;
   }
 } trbioc_t;
-
-enum class TRBMR_MODE : uint8_t {
-  TIMER = 0,
-  WAVEFORM = 1,
-  ONE_SHOT = 2,
-  WAIT_ONE_SHOT = 3,
-};
-
-enum class TRBMR_BIT_LEN : uint8_t {
-  BITS_8 = 0,
-  BITS_16 = 1,
-};
-
-enum class TRBMR_RELOAD_TGT : uint8_t {
-  REGISTER_AND_COUNTER = 0,
-  REGISTER_ONLY = 1,
-};
-
-enum class TRBMR_SOURCE : uint8_t {
-  F1 = 0,
-  F8 = 1,
-  TIMER_RJ2_UNDERFLOW = 2,
-  F2 = 3,
-  F4 = 4,
-  F32 = 5,
-  F64 = 6,
-  F128 = 7,
-};
 
 typedef union trbmr_t {
   struct {
@@ -3308,21 +2669,6 @@ typedef union trbmr_t {
     this->as_uint8 = that.as_uint8;
   }
 } trbmr_t;
-
-enum class TRCMR_MODE : uint8_t {
-  TIMER = 0,
-  PWM = 1,
-};
-
-enum class TRCMR_MODE2 : uint8_t {
-  PWM2 = 0,
-  TIMER_OR_PWM = 1,
-};
-
-enum class TRCMR_TRCGR : uint8_t {
-  OUT_CMP_OR_IN_CAPT = 0,
-  BUF_OR_TRCGR_BUF = 1,
-};
 
 typedef union trcmr_t {
   struct {
@@ -3401,21 +2747,6 @@ typedef union trcmr_t {
     this->as_uint8 = that.as_uint8;
   }
 } trcmr_t;
-
-enum class TRCCR1_SOURCE : uint8_t {
-  F1 = 0,
-  F2 = 1,
-  F4 = 2,
-  F8 = 3,
-  F32 = 4,
-  FALLING_EDGE_TRCCLK = 5,
-  HFOCO = 6,
-};
-
-enum class TRCCR1_CLEAR_MODE : uint8_t {
-  DISABLED = 0,
-  CLEARED = 1,
-};
 
 typedef union trccr1_t {
   struct {
@@ -3570,16 +2901,6 @@ typedef union trcsr_t {
     this->as_uint8 = that.as_uint8;
   }
 } trcsr_t;
-
-enum class TRCIOR0_CTRL : uint8_t {
-  OUT_COMP_DISABLED = 0,
-  OUT_COMP_LOW_LEVEL = 1,
-  OUT_COMP_HIGH_LEVEL = 2,
-  OUT_COMP_TOGGLE = 3,
-  IN_CAPT_RISING_EDGE = 4,
-  IN_CAPT_FALLING_EDGE = 5,
-  IN_CAPT_BOTH_EDGE = 6,
-};
 
 typedef union trcior0_t {
   struct {

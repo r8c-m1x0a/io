@@ -57,4 +57,8 @@ test = testEnv.Command(
 testEnv.AlwaysBuild(test)
 Alias("test", f"build/{PROGRAM}.log")
 
+docs = testEnv.Command("html/index.html", [], "doxygen Doxyfile")
+testEnv.AlwaysBuild(docs)
+Alias("docs", "html/index.html")
+
 Default(lib)
