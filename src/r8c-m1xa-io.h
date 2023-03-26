@@ -80,6 +80,14 @@
 #include "trcoer_e.h"
 #include "trcoer_out.h"
 #include "trcopr_op_sel.h"
+#include "trcopr_op_out_level.h"
+#include "ofs2_mstcr_ini_value.h"
+#include "ofs2_wdt_refresh_period.h"
+#include "ofs_v_dtct.h"
+#include "fmr0_ew_mode.h"
+#include "cmp_itr_edge.h"
+#include "cmp_filter_smpl.h"
+#include "ofs2_wdt_underflow_period.h"
 
 #pragma pack(1)
 

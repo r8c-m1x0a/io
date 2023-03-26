@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint>
+#include <cstdint>
 
 /// @file
 /// @brief TRCOERレジスタのout
