@@ -3353,10 +3353,6 @@ typedef union fmr2_t {
   }
 } fmr2_t;
 
-typedef struct {
-  uint8_t buf[32767];
-} foo;
-
 typedef struct io_t {
   io_t() = default;
 
