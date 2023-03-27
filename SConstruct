@@ -2,7 +2,7 @@
 
 import os
 
-PROGRAM='r8c_io'
+PROGRAM='io'
 
 baseEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
