@@ -41,35 +41,38 @@ lib = env.Library(
 BASE_DIR = Dir('.').srcnode().abspath
 
 testProg = testEnv.Program(
-    PROGRAM, Glob('build/test/*.cpp')
+    f"{BASE_DIR}/build/test/{PROGRAM}", Glob('build/test/*.cpp')
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
 _test = testEnv.Command(
-    f"{BASE_DIR}/{PROGRAM}.log", testProg,
-    f"{BASE_DIR}/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/{PROGRAM}.log"
+    f"{BASE_DIR}/build/test/{PROGRAM}.log", testProg,
+    f"{BASE_DIR}/build/test/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/build/test/{PROGRAM}.log"
 )
 
 coverage = testEnv.Command(
-    "coverage.info",
+    f"{BASE_DIR}/build/test/coverage.info",
     Glob('build/test/*.gcda'),
-    "lcov -c -d build/test -o coverage.info"
+    f"lcov -c -d {BASE_DIR}/build/test -o {BASE_DIR}/build/test/coverage.info"
 )
 
 coverage_html = testEnv.Command(
-    "coverage",
-    "coverage.info",
-    "rm -rf html && genhtml coverage.info  -o coverage"
+    f"{BASE_DIR}/coverage",
+    f"{BASE_DIR}/build/test/coverage.info",
+    f"genhtml {BASE_DIR}/build/test/coverage.info  -o {BASE_DIR}/coverage"
 )
 
-Depends(_test, coverage)
+Depends(coverage_html, coverage)
+Depends(coverage, _test)
+testEnv.Clean(_test, ["coverage", f"{BASE_DIR}/build/test"])
+
+_docs = testEnv.Command(f"{BASE_DIR}/html", [], f"doxygen {BASE_DIR}/Doxyfile")
+testEnv.Clean(_docs, "html")
 
 if "test" in skip:
     Alias("test", [])
 else:
-    Alias("test", [_test])
-
-_docs = testEnv.Command("html/index.html", [], "doxygen Doxyfile")
+    Alias("test", [coverage_html])
 
 if "docs" in skip:
     Alias("docs", [])
