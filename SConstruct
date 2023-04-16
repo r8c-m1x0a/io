@@ -25,14 +25,13 @@ env = commonEnv.Clone(
     CXXFLAGS='-std=c++17',
     CPPFLAGS='-Wall -Werror -Wno-unused-variable -fno-exceptions -Os -mcpu=r8c',
 )
-
 env.VariantDir(f"{BASE_DIR}/build", f"{BASE_DIR}/src", duplicate=0)
 
 testEnv = commonEnv.Clone(
     LIBS=['pthread', 'libgtest', 'gcov'],
     CPPFLAGS='-coverage',
 )
-testEnv.VariantDir(f"{BASE_DIR}/build", f"{BASE_DIR}/src", duplicate=0)
+testEnv.VariantDir(f"{BASE_DIR}/build/test", f"{BASE_DIR}/src/test", duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
@@ -46,7 +45,7 @@ testProg = testEnv.Program(
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
-_test = testEnv.Command(
+test = testEnv.Command(
     f"{BASE_DIR}/build/test/{PROGRAM}.log", testProg,
     f"{BASE_DIR}/build/test/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/build/test/{PROGRAM}.log"
 )
@@ -64,11 +63,11 @@ coverage_html = testEnv.Command(
 )
 
 Depends(coverage_html, coverage)
-Depends(coverage, _test)
-testEnv.Clean(_test, [f"{BASE_DIR}/coverage", f"{BASE_DIR}/build/test"])
+Depends(coverage, test)
+testEnv.Clean(test, [f"{BASE_DIR}/coverage", f"{BASE_DIR}/build/test"])
 
-_docs = testEnv.Command(f"{BASE_DIR}/html", [], f"doxygen {BASE_DIR}/Doxyfile")
-testEnv.Clean(_docs, f"{BASE_DIR}/html")
+docs = testEnv.Command(f"{BASE_DIR}/html", [], f"doxygen {BASE_DIR}/Doxyfile")
+testEnv.Clean(docs, f"{BASE_DIR}/html")
 
 if "test" in skip:
     Alias("test", [])
@@ -78,6 +77,6 @@ else:
 if "docs" in skip:
     Alias("docs", [])
 else:
-    Alias("docs", _docs)
+    Alias("docs", docs)
 
 Default(lib)
