@@ -10,38 +10,39 @@ if skip is None:
 else:
     skip = skip.split()
 
-baseEnv = Environment(
+BASE_DIR = Dir('.').srcnode().abspath
+
+commonEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
+    CPPPATH=[f"{BASE_DIR}/src"],
+)
+
+env = commonEnv.Clone(
     AS='m32c-elf-as',
     CC='m32c-elf-gcc',
     CXX='m32c-elf-g++',
-    CFLAGS='-std=gnu99',
-    CXXFLAGS='-std=c++14',
+    CFLAGS='-std=c99',
+    CXXFLAGS='-std=c++17',
     CPPFLAGS='-Wall -Werror -Wno-unused-variable -fno-exceptions -Os -mcpu=r8c',
-    CPPPATH=['src'],
 )
 
-env = baseEnv.Clone()
-env.VariantDir('build', 'src', duplicate=0)
+env.VariantDir(f"{BASE_DIR}/build", f"{BASE_DIR}/src", duplicate=0)
 
-testEnv = Environment(
-    ENV = {'PATH' : os.environ['PATH']},
+testEnv = commonEnv.Clone(
     LIBS=['pthread', 'libgtest', 'gcov'],
-    CPPPATH=['src'],
     CPPFLAGS='-coverage',
 )
-testEnv.VariantDir('build', 'src', duplicate=0)
+testEnv.VariantDir(f"{BASE_DIR}/build", f"{BASE_DIR}/src", duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
-        'build/r8c-m1xa-io.cpp',
+        f"{BASE_DIR}/build/r8c-m1xa-io.cpp",
     ],
 )
-
-BASE_DIR = Dir('.').srcnode().abspath
+env.Alias("lib", lib)
 
 testProg = testEnv.Program(
-    f"{BASE_DIR}/build/test/{PROGRAM}", Glob('build/test/*.cpp')
+    f"{BASE_DIR}/build/test/{PROGRAM}", Glob(f"{BASE_DIR}/build/test/*.cpp")
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
@@ -52,7 +53,7 @@ _test = testEnv.Command(
 
 coverage = testEnv.Command(
     f"{BASE_DIR}/build/test/coverage.info",
-    Glob('build/test/*.gcda'),
+    Glob(f"{BASE_DIR}/build/test/*.gcda"),
     f"lcov -c -d {BASE_DIR}/build/test -o {BASE_DIR}/build/test/coverage.info"
 )
 
@@ -64,10 +65,10 @@ coverage_html = testEnv.Command(
 
 Depends(coverage_html, coverage)
 Depends(coverage, _test)
-testEnv.Clean(_test, ["coverage", f"{BASE_DIR}/build/test"])
+testEnv.Clean(_test, [f"{BASE_DIR}/coverage", f"{BASE_DIR}/build/test"])
 
 _docs = testEnv.Command(f"{BASE_DIR}/html", [], f"doxygen {BASE_DIR}/Doxyfile")
-testEnv.Clean(_docs, "html")
+testEnv.Clean(_docs, f"{BASE_DIR}/html")
 
 if "test" in skip:
     Alias("test", [])
