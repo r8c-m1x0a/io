@@ -4,6 +4,12 @@ import os
 
 PROGRAM='io'
 
+skip = os.environ.get('SKIP')
+if skip is None:
+    skip = []
+else:
+    skip = skip.split()
+
 baseEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
     AS='m32c-elf-as',
@@ -32,18 +38,17 @@ lib = env.Library(
     ],
 )
 
+BASE_DIR = Dir('.').srcnode().abspath
+
 testProg = testEnv.Program(
     PROGRAM, Glob('build/test/*.cpp')
 )
 
-BASE_DIR = Dir('.').srcnode().abspath
-
 TEST_ONLY = os.getenv('TEST_ONLY')
-test = testEnv.Command(
+_test = testEnv.Command(
     f"{BASE_DIR}/{PROGRAM}.log", testProg,
     f"{BASE_DIR}/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/{PROGRAM}.log"
 )
-testEnv.AlwaysBuild(test)
 
 coverage = testEnv.Command(
     "coverage.info",
@@ -56,10 +61,19 @@ coverage_html = testEnv.Command(
     "coverage.info",
     "rm -rf html && genhtml coverage.info  -o coverage"
 )
-Alias("test", [test, coverage_html])
 
-docs = testEnv.Command("html/index.html", [], "doxygen Doxyfile")
-testEnv.AlwaysBuild(docs)
-Alias("docs", "html/index.html")
+Depends(_test, coverage)
+
+if "test" in skip:
+    Alias("test", [])
+else:
+    Alias("test", [_test])
+
+_docs = testEnv.Command("html/index.html", [], "doxygen Doxyfile")
+
+if "docs" in skip:
+    Alias("docs", [])
+else:
+    Alias("docs", _docs)
 
 Default(lib)
