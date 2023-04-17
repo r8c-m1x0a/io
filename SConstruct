@@ -4,8 +4,6 @@ import os
 
 PROGRAM='io'
 
-BASE_DIR = Dir('.').srcnode().abspath
-
 skip = os.environ.get('SKIP')
 if skip is None:
     skip = []
@@ -14,7 +12,7 @@ else:
 
 commonEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
-    CPPPATH=[f"{BASE_DIR}/src"],
+    CPPPATH=["src"],
 )
 
 env = commonEnv.Clone(
@@ -25,49 +23,49 @@ env = commonEnv.Clone(
     CXXFLAGS='-std=c++17',
     CPPFLAGS='-Wall -Werror -Wno-unused-variable -fno-exceptions -Os -mcpu=r8c',
 )
-env.VariantDir(f"{BASE_DIR}/build", f"{BASE_DIR}/src", duplicate=0)
+env.VariantDir("build", "src", duplicate=0)
 
 testEnv = commonEnv.Clone(
     LIBS=['pthread', 'libgtest', 'gcov'],
     CPPFLAGS='-coverage',
 )
-testEnv.VariantDir(f"{BASE_DIR}/build/test", f"{BASE_DIR}/src/test", duplicate=0)
+testEnv.VariantDir("build/test", "src/test", duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
-        f"{BASE_DIR}/build/r8c-m1xa-io.cpp",
+        "build/r8c-m1xa-io.cpp",
     ],
 )
 env.Alias("compile", lib)
 
 testProg = testEnv.Program(
-    f"{BASE_DIR}/build/test/{PROGRAM}", Glob(f"{BASE_DIR}/build/test/*.cpp")
+    f"build/test/{PROGRAM}", Glob("build/test/*.cpp")
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
 test = testEnv.Command(
-    f"{BASE_DIR}/build/test/{PROGRAM}.log", testProg,
-    f"{BASE_DIR}/build/test/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee {BASE_DIR}/build/test/{PROGRAM}.log"
+    f"build/test/{PROGRAM}.log", testProg,
+    f"build/test/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee build/test/{PROGRAM}.log"
 )
 
 coverage = testEnv.Command(
-    f"{BASE_DIR}/build/test/coverage.info",
-    Glob(f"{BASE_DIR}/build/test/*.gcda"),
-    f"lcov -c -d {BASE_DIR}/build/test -o {BASE_DIR}/build/test/coverage.info"
+    "build/test/coverage.info",
+    Glob("build/test/*.gcda"),
+    "lcov -c -d build/test -o build/test/coverage.info"
 )
 
 coverage_html = testEnv.Command(
-    f"{BASE_DIR}/coverage",
-    f"{BASE_DIR}/build/test/coverage.info",
-    f"genhtml {BASE_DIR}/build/test/coverage.info  -o {BASE_DIR}/coverage"
+    "coverage",
+    "build/test/coverage.info",
+    "genhtml build/test/coverage.info  -o coverage"
 )
 
 Depends(coverage_html, coverage)
 Depends(coverage, test)
-testEnv.Clean(test, [f"{BASE_DIR}/coverage", f"{BASE_DIR}/build/test"])
+testEnv.Clean(test, ["coverage", "build/test"])
 
-docs = testEnv.Command(f"{BASE_DIR}/html", [], f"doxygen {BASE_DIR}/Doxyfile")
-testEnv.Clean(docs, f"{BASE_DIR}/html")
+docs = testEnv.Command("html", [], "doxygen Doxyfile")
+testEnv.Clean(docs, "html")
 
 if "test" in skip:
     Alias("test", [])
