@@ -2,7 +2,7 @@
 
 import os
 
-PROGRAM='io'
+NAME='io'
 
 skip = os.environ.get('SKIP')
 if skip is None:
@@ -32,35 +32,28 @@ testEnv = commonEnv.Clone(
 testEnv.VariantDir("build/test", "src/test", duplicate=0)
 
 lib = env.Library(
-    f"build/main/{PROGRAM}.a", [
+    f"build/main/{NAME}.a", [
         Glob("build/main/*.cpp"), Glob("build/main/*.c"), Glob("build/main/*.cc")
     ],
 )
 env.Alias("compile", lib)
 
 testProg = testEnv.Program(
-    f"build/test/{PROGRAM}", [Glob("build/test/*.cpp"), Glob("build/test/*.c"), Glob("build/test/*.cc")]
+    f"build/test/{NAME}", [Glob("build/test/*.cpp"), Glob("build/test/*.c"), Glob("build/test/*.cc")]
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
 test = testEnv.Command(
-    f"build/test/{PROGRAM}.log", testProg,
-    f"build/test/{PROGRAM} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee build/test/{PROGRAM}.log"
+    f"build/test/{NAME}.log", testProg,
+    f"build/test/{NAME} " + ("" if TEST_ONLY is None else f"--gtest_filter={TEST_ONLY}") + f" | tee build/test/{NAME}.log"
 )
 
 coverage = testEnv.Command(
     "build/test/coverage.info",
     Glob("build/test/*.gcda"),
-    "lcov -c -d build/test -o build/test/coverage.info"
+    "lcov -c -d build/test -o build/test/coverage.info && genhtml build/test/coverage.info  -o coverage"
 )
 
-coverage_html = testEnv.Command(
-    "coverage",
-    "build/test/coverage.info",
-    "genhtml build/test/coverage.info  -o coverage"
-)
-
-Depends(coverage_html, coverage)
 Depends(coverage, test)
 testEnv.Clean(test, ["coverage", "build/test"])
 
@@ -70,7 +63,7 @@ testEnv.Clean(docs, "html")
 if "test" in skip:
     Alias("test", [])
 else:
-    Alias("test", [coverage_html])
+    Alias("test", [coverage])
 
 if "docs" in skip:
     Alias("docs", [])
