@@ -4,13 +4,13 @@ import os
 
 PROGRAM='io'
 
+BASE_DIR = Dir('.').srcnode().abspath
+
 skip = os.environ.get('SKIP')
 if skip is None:
     skip = []
 else:
     skip = skip.split()
-
-BASE_DIR = Dir('.').srcnode().abspath
 
 commonEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
@@ -38,7 +38,7 @@ lib = env.Library(
         f"{BASE_DIR}/build/r8c-m1xa-io.cpp",
     ],
 )
-env.Alias("lib", lib)
+env.Alias("compile", lib)
 
 testProg = testEnv.Program(
     f"{BASE_DIR}/build/test/{PROGRAM}", Glob(f"{BASE_DIR}/build/test/*.cpp")
