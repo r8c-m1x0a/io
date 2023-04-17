@@ -33,13 +33,13 @@ testEnv.VariantDir("build/test", "src/test", duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
-        "build/r8c-m1xa-io.cpp",
+        Glob("build/*.cpp"), Glob("build/*.c"),
     ],
 )
 env.Alias("compile", lib)
 
 testProg = testEnv.Program(
-    f"build/test/{PROGRAM}", Glob("build/test/*.cpp")
+    f"build/test/{PROGRAM}", [Glob("build/test/*.cpp"), Glob("build/test/*.c")]
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
