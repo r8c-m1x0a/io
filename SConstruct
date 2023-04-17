@@ -12,7 +12,7 @@ else:
 
 commonEnv = Environment(
     ENV = {'PATH' : os.environ['PATH']},
-    CPPPATH=["src"],
+    CPPPATH=["src/main"],
 )
 
 env = commonEnv.Clone(
@@ -23,7 +23,7 @@ env = commonEnv.Clone(
     CXXFLAGS='-std=c++17',
     CPPFLAGS='-Wall -Werror -Wno-unused-variable -fno-exceptions -Os -mcpu=r8c',
 )
-env.VariantDir("build", "src", duplicate=0)
+env.VariantDir("build/main", "src/main", duplicate=0)
 
 testEnv = commonEnv.Clone(
     LIBS=['pthread', 'libgtest', 'gcov'],
@@ -33,13 +33,13 @@ testEnv.VariantDir("build/test", "src/test", duplicate=0)
 
 lib = env.Library(
     f"{PROGRAM}.a", [
-        Glob("build/*.cpp"), Glob("build/*.c"),
+        Glob("build/main/*.cpp"), Glob("build/main/*.c"), Glob("build/main/*.cc")
     ],
 )
 env.Alias("compile", lib)
 
 testProg = testEnv.Program(
-    f"build/test/{PROGRAM}", [Glob("build/test/*.cpp"), Glob("build/test/*.c")]
+    f"build/test/{PROGRAM}", [Glob("build/test/*.cpp"), Glob("build/test/*.c"), Glob("build/test/*.cc")]
 )
 
 TEST_ONLY = os.getenv('TEST_ONLY')
