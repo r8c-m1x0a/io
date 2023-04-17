@@ -32,7 +32,7 @@ testEnv = commonEnv.Clone(
 testEnv.VariantDir("build/test", "src/test", duplicate=0)
 
 lib = env.Library(
-    f"{PROGRAM}.a", [
+    f"build/main/{PROGRAM}.a", [
         Glob("build/main/*.cpp"), Glob("build/main/*.c"), Glob("build/main/*.cc")
     ],
 )
