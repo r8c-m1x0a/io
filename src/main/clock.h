@@ -27,6 +27,9 @@ public:
   /// @return NOP命令何回実行で1msになるか。
   uint32_t nops_per_ms();
 
+
+  /// @brief ビジーウェイトする。
+  /// @param ミリ秒。
   void busy_wait_ms(uint16_t ms) {
     busy_wait(ms * nops_per_ms());
   }
@@ -58,32 +61,8 @@ public:
   }
 
   uint32_t nops_per_ms() {
-    uint32_t base = 600;
-    switch (this->prop.div) {
-    case SCKCR_PHISSEL::DIV_1:
-      break;
-
-    case SCKCR_PHISSEL::DIV_2:
-      base /= 2;
-      break;
-
-    case SCKCR_PHISSEL::DIV_4:
-      base /= 4;
-      break;
-
-    case SCKCR_PHISSEL::DIV_8:
-      base /= 8;
-      break;
-
-    case SCKCR_PHISSEL::DIV_16:
-      base /= 16;
-      break;
-
-    case SCKCR_PHISSEL::DIV_32:
-      base /= 32;
-      break;
-    }
-    return base;
+    uint16_t divider = (1 << uint8_t(this->prop.div));
+    return 600 / divider;
   }
 
   void busy_wait_ms(uint16_t ms) {
