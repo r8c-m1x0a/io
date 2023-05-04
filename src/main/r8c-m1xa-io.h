@@ -3546,7 +3546,7 @@ typedef struct io_t {
   adinsel_t adinsel; // 0x0009d
 
   struct { // 0x0009e
-    unsigned int ad_starts:1;
+    bool ad_starts:1;
     unsigned int reserved0:7;
   } adcon0;
 

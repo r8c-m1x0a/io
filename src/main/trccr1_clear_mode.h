@@ -6,6 +6,6 @@
 /// @brief TRCCR1レジスタのclear mode。
 enum class TRCCR1_CLEAR_MODE : uint8_t {
   DISABLED = 0,
-  CLEARED = 1,
+  CLEAR = 1,
 };
 

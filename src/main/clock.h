@@ -10,7 +10,6 @@
 template<class T>
 class Clock {
 public:
-  Clock();
   Clock(T _prop) : prop(_prop) {}
 
   /// @brief 初期化を実行。
